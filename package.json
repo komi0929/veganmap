@@ -1,0 +1,24 @@
+{
+  "name": "veganmap",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "@supabase/supabase-js": "^2.43.2"
+  },
+  "devDependencies": {
+    "typescript": "latest",
+    "@types/react": "latest",
+    "@types/node": "latest",
+    "@types/leaflet": "latest"
+  }
+}
