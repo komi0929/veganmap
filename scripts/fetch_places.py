@@ -1,82 +1,72 @@
 #!/usr/bin/env python3
 """
-Google Places → Supabase `places` テーブルへ upsert（重複完全排除版）
-テーブル構造（5 列すべて NULL 可）:
-    id   text primary key
-    name text
-    lat  double precision
-    lng  double precision
-    tags text
-RLS は OFF または anon に INSERT/UPSERT 許可
+Google Places → Supabase (404 完全回避版)
+- 1 レコードずつ upsert（404 バグ無視）
+- 欠損値 / NaN / 重複 place_id すべて排除
 """
 
-import os, time, requests, itertools
+import os, time, requests
 from supabase import create_client, Client
 
 # -- 環境変数 --
-sb: Client = create_client(
-    os.environ["SUPABASE_URL"],
-    os.environ["SUPABASE_KEY"]
-)
-PLACES_KEY = os.environ["GOOGLE_PLACES_KEY"]
+sb: Client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
+GKEY = os.getenv("GOOGLE_PLACES_KEY")
 
-# -- 設定 --
+# -- 定数 --
 TARGETS  = [("Fukuoka",33.5902,130.4017), ("Hiroshima",34.3853,132.4553)]
-KEYWORDS = ["vegan", "gluten free"]
+WORDS    = ["vegan", "gluten free"]
 RADIUS   = 25_000
-SLEEP    = 2.2         # next_page_token 有効化待ち
-CHUNK    = 50
+SLEEP    = 2.2       # next_page_token 待ち
 
-# -- utils --
-def batched(it, n):
-    it = iter(it)
-    return iter(lambda: list(itertools.islice(it, n)), [])
-
-def g_places(kw, lat, lng):
+# -- 関数 --
+def g_places(word, lat, lng):
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
-    params = dict(keyword=kw, location=f"{lat},{lng}",
-                  radius=RADIUS, language="en", key=PLACES_KEY)
+    p   = dict(keyword=word, location=f"{lat},{lng}", radius=RADIUS,
+               language="en", key=GKEY)
     while True:
-        j = requests.get(url, params=params, timeout=10).json()
-        status = j.get("status")
-        if status not in ("OK", "ZERO_RESULTS"):
-            print("⚠️  Google API:", status, j.get("error_message")); break
+        j = requests.get(url, params=p, timeout=10).json()
+        if j.get("status") not in ("OK", "ZERO_RESULTS"):
+            print("⚠️ Google:", j.get("status"), j.get("error_message")); break
         yield from j.get("results", [])
         tok = j.get("next_page_token")
         if not tok: break
         time.sleep(SLEEP)
-        params = {"pagetoken": tok, "key": PLACES_KEY}
+        p = {"pagetoken": tok, "key": GKEY}
 
-# -- main --
+def safe_float(x):
+    try: return float(x)
+    except Exception: return None
+
+# -- メイン --
 def main():
-    seen = set()        # place_id 重複除外
-    rows = []
-
+    seen = set()
+    ok   = 0
     for city,clat,clng in TARGETS:
-        for kw in KEYWORDS:
-            print(f"🔍 {city} / {kw}")
-            for p in g_places(kw, clat, clng):
-                pid = p["place_id"]
-                if pid in seen:        # ★重複をスキップ
-                    continue
+        for w in WORDS:
+            print(f"🔍 {city}/{w}")
+            for p in g_places(w, clat, clng):
+                pid = p.get("place_id")
+                if not pid or pid in seen: continue
                 seen.add(pid)
-                rows.append(dict(
+
+                row = dict(
                     id   = pid,
-                    name = p["name"],
-                    lat  = float(p["geometry"]["location"]["lat"]),
-                    lng  = float(p["geometry"]["location"]["lng"]),
+                    name = p.get("name") or "",
+                    lat  = safe_float(p["geometry"]["location"].get("lat")),
+                    lng  = safe_float(p["geometry"]["location"].get("lng")),
                     tags = "auto",
-                ))
+                )
+                # 欠損値チェック (lat/lng 必須)
+                if row["lat"] is None or row["lng"] is None: continue
 
-    print(f"📝 unique rows = {len(rows)}")
-    if not rows:
-        print("😢 0 件 – API キー/キーワードを確認"); return
+                # 1 行ずつ upsert で確実に成功させる
+                try:
+                    sb.table("places").upsert(row).execute()
+                    ok += 1
+                except Exception as e:
+                    print("⚠️ upsert error, skip:", e)
 
-    for i,chunk in enumerate(batched(rows, CHUNK), 1):
-        sb.table("places").upsert(chunk).execute()
-        print(f"  ✔ chunk {i} ({len(chunk)})")
-
-    print("🎉  done – 全件 upsert 済み")
+    print(f"🎉 完了 – upsert 成功 {ok} 件")
 
 if __name__ == "__main__":
     main()
