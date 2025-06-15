@@ -1,5 +1,3 @@
-scripts/fetch_places.py
-# scripts/fetch_places.py
 import os, time, requests
 from urllib.parse import urlencode
 from supabase import create_client, Client
