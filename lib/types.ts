@@ -14,6 +14,7 @@ export type Restaurant = {
     price_level?: number | null;
     phone_number?: string | null;
     google_maps_uri?: string | null;
+    website?: string | null;
     opening_hours?: any | null;
     rating?: number;
     user_ratings_total?: number;

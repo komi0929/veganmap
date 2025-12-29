@@ -60,10 +60,14 @@ export default function Home() {
         );
     }, [restaurants, searchQuery]);
 
-    const handleSelectRestaurant = (restaurant: Restaurant) => {
+    const handleSelectRestaurant = (restaurant: Restaurant, source: 'list' | 'map' | 'gallery' = 'list') => {
         setSelectedRestaurant(restaurant);
-        // Switch back to map on mobile if selected from gallery? 
-        // Or just open modal. Modal is better.
+        if (searchQuery.trim()) {
+            // Log the search interaction for self-evolution
+            import('@/lib/actions/analytics').then(mod => {
+                mod.logSearchClick(searchQuery, restaurant.id, source);
+            });
+        }
     };
 
     const handlePlaceSelect = (place: PlaceResult) => {
@@ -174,13 +178,13 @@ export default function Home() {
                     {viewMode === 'map' ? (
                         <RestaurantList
                             restaurants={filteredRestaurants}
-                            onSelect={handleSelectRestaurant}
+                            onSelect={(r) => handleSelectRestaurant(r, 'list')}
                             selectedId={selectedRestaurant?.id}
                         />
                     ) : (
                         <DishGallery
                             restaurants={filteredRestaurants}
-                            onSelect={handleSelectRestaurant}
+                            onSelect={(r) => handleSelectRestaurant(r, 'gallery')}
                         />
                     )}
                 </div>
@@ -190,7 +194,7 @@ export default function Home() {
             <div className={`absolute inset-0 md:static md:flex-1 h-screen bg-stone-200 z-0 transition-transform duration-300 md:transform-none ${viewMode === 'gallery' ? 'translate-x-full md:translate-x-0' : 'translate-x-0'}`}>
                 <Map
                     restaurants={filteredRestaurants}
-                    onMarkerClick={handleSelectRestaurant}
+                    onMarkerClick={(r) => handleSelectRestaurant(r, 'map')}
                     selectedId={selectedRestaurant?.id}
                 />
             </div>
@@ -200,7 +204,7 @@ export default function Home() {
                 <div className="md:hidden absolute inset-0 z-10 pt-20 bg-stone-50 animate-in slide-in-from-bottom duration-300">
                     <DishGallery
                         restaurants={filteredRestaurants}
-                        onSelect={handleSelectRestaurant}
+                        onSelect={(r) => handleSelectRestaurant(r, 'gallery')}
                     />
                 </div>
             )}
@@ -210,7 +214,7 @@ export default function Home() {
                 {viewMode === 'map' && (
                     <MobileRestaurantCarousel
                         restaurants={filteredRestaurants}
-                        onSelect={handleSelectRestaurant}
+                        onSelect={(r) => handleSelectRestaurant(r, 'list')}
                         selectedId={selectedRestaurant?.id}
                     />
                 )}

@@ -19,6 +19,7 @@ export interface RestaurantWithSync {
     phone_number?: string;
     price_level?: number;
     google_maps_uri?: string;
+    website?: string;
     real_menu?: { name: string; count: number; sentiment: number }[];
 }
 

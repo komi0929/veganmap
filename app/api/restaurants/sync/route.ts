@@ -258,6 +258,7 @@ export async function POST(request: NextRequest) {
             price_level: place.price_level,
             phone_number: place.formatted_phone_number,
             google_maps_uri: place.url,
+            website: place.website, // NEW: Capture website
             real_menu: extractRealMenu(place.reviews), // NEW: Extract real menu
             last_synced_at: new Date().toISOString()
         };
