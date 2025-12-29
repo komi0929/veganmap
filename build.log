@@ -1,0 +1,39 @@
+
+> veganmap@0.1.0 build
+> next build
+
+笞 Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\soyst\pnpm-lock.yaml as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\soyst\OneDrive\繝・せ繧ｯ繝医ャ繝予veganmap\package-lock.json
+
+笆ｲ Next.js 16.1.1 (Turbopack)
+
+笞 The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+
+thread 'tokio-runtime-worker' (2064) panicked at turbopack\crates\turbopack-core\src\ident.rs:352:34:
+byte index 17 is not a char boundary; it is inside '繧ｯ' (bytes 15..18) of `OneDrive_繝・せ繧ｯ繝医ャ繝誉veganmap__next-internal_server_app_favicon_ico_route_actions_4b4a4dc5`
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'tokio-runtime-worker' (16360) panicked at turbopack\crates\turbopack-core\src\ident.rs:352:34:
+byte index 13 is not a char boundary; it is inside '繧ｹ' (bytes 12..15) of `OneDrive_繝・せ繧ｯ繝医ャ繝誉veganmap__next-internal_server_app_[locale]_page_actions_85c00737`
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./OneDrive/繝・せ繧ｯ繝医ャ繝・veganmap/app/[locale]/page.tsx:7:21
+Ecmascript file had an error
+   5 | import { Search } from 'lucide-react';
+   6 |
+>  7 | const MapCallback = dynamic(() => import('@/components/Map'), { ssr: false });
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   8 |
+   9 | export default function Home() {
+  10 |     const t = useTranslations('Index');
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+    at <unknown> (./OneDrive/繝・せ繧ｯ繝医ャ繝・veganmap/app/[locale]/page.tsx:7:21)

@@ -1,0 +1,111 @@
+{
+    "Index": {
+        "title": "Veegan.jp",
+        "searchPlaceholder": "依名稱或標籤搜尋...",
+        "searchButton": "搜尋",
+        "noResults": "找不到餐廳",
+        "addRestaurant": "新增餐廳",
+        "ownerDashboard": "店主後台"
+    },
+    "Detail": {
+        "verified": "已驗證",
+        "pending": "審核中",
+        "address": "地址",
+        "tags": "標籤",
+        "unknownLocation": "位置不明",
+        "openInMaps": "在 Google 地圖開啟",
+        "close": "關閉",
+        "makeReservation": "預約"
+    },
+    "Reservation": {
+        "title": "預約請求",
+        "name": "姓名",
+        "namePlaceholder": "王小明",
+        "email": "電子郵件",
+        "emailPlaceholder": "example@email.com",
+        "dietaryPreferences": "飲食偏好",
+        "vegan": "純素",
+        "vegetarian": "素食",
+        "glutenFree": "無麩質",
+        "allergies": "過敏原",
+        "allergiesPlaceholder": "例如：堅果、大豆",
+        "otherRequests": "其他要求",
+        "otherPlaceholder": "如有特殊要求請填寫",
+        "submit": "送出預約",
+        "submitting": "傳送中...",
+        "successTitle": "預約請求已收到",
+        "successMessage": "請等待餐廳確認，我們會透過電子郵件通知您。",
+        "errorMessage": "傳送失敗，請重試。",
+        "close": "關閉"
+    },
+    "PlacesSearch": {
+        "title": "搜尋餐廳",
+        "placeholder": "輸入餐廳名稱或地點...",
+        "searchButton": "搜尋",
+        "hint": "搜尋純素及素食友善餐廳",
+        "noResults": "沒有結果",
+        "searchError": "搜尋失敗",
+        "reviews": "評論",
+        "add": "新增"
+    },
+    "AddRestaurant": {
+        "title": "新增餐廳",
+        "address": "地址",
+        "tags": "標籤",
+        "selectAtLeastOne": "至少選擇一個",
+        "cancel": "取消",
+        "submit": "新增",
+        "error": "新增失敗",
+        "alreadyExists": "此餐廳已註冊",
+        "successTitle": "已新增",
+        "successMessage": "餐廳已新增"
+    },
+    "Owner": {
+        "title": "店主後台",
+        "totalReservations": "預約總數",
+        "allRestaurants": "所有餐廳",
+        "allStatuses": "所有狀態",
+        "pending": "待處理",
+        "confirmed": "已確認",
+        "rejected": "已拒絕",
+        "noReservations": "沒有預約",
+        "dietaryRequests": "飲食要求",
+        "allergies": "過敏原",
+        "other": "其他",
+        "approve": "批准",
+        "reject": "拒絕",
+        "note": "備註",
+        "logout": "登出"
+    },
+    "Auth": {
+        "title": "店主登入",
+        "subtitle": "管理您的餐廳預約",
+        "signIn": "登入",
+        "signUp": "註冊",
+        "email": "電子郵件",
+        "password": "密碼",
+        "signInButton": "登入",
+        "signUpButton": "註冊",
+        "signupSuccess": "確認郵件已發送，請查看您的收件匣。"
+    },
+    "EditRestaurant": {
+        "title": "編輯餐廳",
+        "name": "名稱",
+        "address": "地址",
+        "tags": "標籤",
+        "verified": "標記為已驗證",
+        "save": "儲存",
+        "delete": "刪除",
+        "confirmDelete": "確定要刪除此餐廳嗎？",
+        "error": "儲存失敗",
+        "deleteError": "刪除失敗"
+    },
+    "PhotoUpload": {
+        "title": "照片",
+        "add": "新增",
+        "hint": "最大 5MB，JPG/PNG 格式",
+        "invalidType": "只能上傳圖片檔案",
+        "fileTooLarge": "檔案大小須小於 5MB",
+        "uploadError": "上傳失敗"
+    }
+}

@@ -1,0 +1,111 @@
+{
+    "Index": {
+        "title": "Veegan.jp",
+        "searchPlaceholder": "이름 또는 태그로 검색...",
+        "searchButton": "검색",
+        "noResults": "레스토랑을 찾을 수 없습니다",
+        "addRestaurant": "레스토랑 추가",
+        "ownerDashboard": "오너 대시보드"
+    },
+    "Detail": {
+        "verified": "인증됨",
+        "pending": "확인중",
+        "address": "주소",
+        "tags": "태그",
+        "unknownLocation": "위치 불명",
+        "openInMaps": "Google 지도에서 열기",
+        "close": "닫기",
+        "makeReservation": "예약하기"
+    },
+    "Reservation": {
+        "title": "예약 요청",
+        "name": "이름",
+        "namePlaceholder": "홍길동",
+        "email": "이메일 주소",
+        "emailPlaceholder": "example@email.com",
+        "dietaryPreferences": "식이 선호도",
+        "vegan": "비건",
+        "vegetarian": "채식주의자",
+        "glutenFree": "글루텐 프리",
+        "allergies": "알레르기",
+        "allergiesPlaceholder": "예: 견과류, 대두",
+        "otherRequests": "기타 요청",
+        "otherPlaceholder": "특별한 요청이 있으시면 적어주세요",
+        "submit": "예약 요청 보내기",
+        "submitting": "전송 중...",
+        "successTitle": "예약 요청이 접수되었습니다",
+        "successMessage": "레스토랑의 확인을 기다려 주세요. 이메일로 연락드리겠습니다.",
+        "errorMessage": "전송에 실패했습니다. 다시 시도해 주세요.",
+        "close": "닫기"
+    },
+    "PlacesSearch": {
+        "title": "레스토랑 검색",
+        "placeholder": "레스토랑 이름 또는 위치 입력...",
+        "searchButton": "검색",
+        "hint": "비건 및 채식 친화적인 레스토랑을 검색합니다",
+        "noResults": "결과 없음",
+        "searchError": "검색 실패",
+        "reviews": "리뷰",
+        "add": "추가"
+    },
+    "AddRestaurant": {
+        "title": "레스토랑 추가",
+        "address": "주소",
+        "tags": "태그",
+        "selectAtLeastOne": "하나 이상 선택",
+        "cancel": "취소",
+        "submit": "추가",
+        "error": "추가 실패",
+        "alreadyExists": "이 레스토랑은 이미 등록되어 있습니다",
+        "successTitle": "추가됨",
+        "successMessage": "레스토랑이 추가되었습니다"
+    },
+    "Owner": {
+        "title": "오너 대시보드",
+        "totalReservations": "총 예약",
+        "allRestaurants": "모든 레스토랑",
+        "allStatuses": "모든 상태",
+        "pending": "대기중",
+        "confirmed": "승인됨",
+        "rejected": "거절됨",
+        "noReservations": "예약 없음",
+        "dietaryRequests": "식이 요청",
+        "allergies": "알레르기",
+        "other": "기타",
+        "approve": "승인",
+        "reject": "거절",
+        "note": "메모",
+        "logout": "로그아웃"
+    },
+    "Auth": {
+        "title": "오너 로그인",
+        "subtitle": "레스토랑 예약을 관리하세요",
+        "signIn": "로그인",
+        "signUp": "가입",
+        "email": "이메일 주소",
+        "password": "비밀번호",
+        "signInButton": "로그인",
+        "signUpButton": "가입하기",
+        "signupSuccess": "확인 이메일이 전송되었습니다. 받은 편지함을 확인해 주세요."
+    },
+    "EditRestaurant": {
+        "title": "레스토랑 편집",
+        "name": "이름",
+        "address": "주소",
+        "tags": "태그",
+        "verified": "인증됨으로 표시",
+        "save": "저장",
+        "delete": "삭제",
+        "confirmDelete": "이 레스토랑을 삭제하시겠습니까?",
+        "error": "저장 실패",
+        "deleteError": "삭제 실패"
+    },
+    "PhotoUpload": {
+        "title": "사진",
+        "add": "추가",
+        "hint": "최대 5MB, JPG/PNG 형식",
+        "invalidType": "이미지 파일만 업로드할 수 있습니다",
+        "fileTooLarge": "파일 크기는 5MB 이하여야 합니다",
+        "uploadError": "업로드 실패"
+    }
+}
