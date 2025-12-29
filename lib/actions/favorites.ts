@@ -68,7 +68,10 @@ export async function getUserFavorites(userId: string) {
         return [];
     }
 
-    return data || [];
+    return data?.map((item: any) => ({
+        ...item,
+        restaurants: Array.isArray(item.restaurants) ? item.restaurants[0] : item.restaurants
+    })) || [];
 }
 
 export async function checkIsFavorite(restaurantId: string, userId: string): Promise<boolean> {
