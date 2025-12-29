@@ -107,6 +107,28 @@ export async function POST(request: NextRequest) {
             };
             break;
 
+        case 'inquiry_received':
+            // Send to restaurant owner (or admin for now)
+            emailPayload = {
+                to: data.owner_email || 'admin@veegan.jp',
+                subject: `【Veegan.jp】お客様からのお問い合わせ - ${data.restaurant_name}`,
+                html: `
+                    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #7c3aed;">🌱 お客様からのお問い合わせ</h2>
+                        <p>以下のお客様があなたのレストランに興味を持っています：</p>
+                        <div style="background: #f5f3ff; padding: 16px; border-radius: 8px; margin: 16px 0;">
+                            <p><strong>お客様名:</strong> ${data.user_name}</p>
+                            <p><strong>メール:</strong> ${data.user_email}</p>
+                            <p><strong>食事制限:</strong> ${(data.dietary_tags || []).join(', ') || 'なし'}</p>
+                        </div>
+                        <p>このお客様に対応可能かどうか、オーナー管理画面からご回答ください。</p>
+                        <hr style="border: none; border-top: 1px solid #e7e5e4; margin: 20px 0;" />
+                        <p style="color: #78716c; font-size: 14px;">Veegan.jp - ビーガン・ベジタリアン対応レストラン予約</p>
+                    </div>
+                `,
+            };
+            break;
+
         default:
             return NextResponse.json({ error: 'Unknown email type' }, { status: 400 });
     }

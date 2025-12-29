@@ -113,5 +113,18 @@
     "invalidType": "Only image files can be uploaded",
     "fileTooLarge": "File size must be under 5MB",
     "uploadError": "Upload failed"
+  },
+  "Wishlist": {
+    "title": "My Wishlist",
+    "items": "items",
+    "empty": "No favorites yet",
+    "explore": "Explore Restaurants",
+    "pendingVerification": "Pending Verification",
+    "verifiedSafe": "Verified Safe",
+    "bulkInquiryTitle": "AI Agent Bulk Inquiry",
+    "bulkInquiryDescription": "Automatically check availability for all pending restaurants",
+    "checkAllButton": "Check All",
+    "sentCount": "{count} inquiries sent",
+    "skippedCount": "{count} skipped (sent within 7 days)"
   }
 }

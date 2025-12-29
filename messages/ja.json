@@ -113,5 +113,18 @@
     "invalidType": "画像ファイルのみアップロードできます",
     "fileTooLarge": "ファイルサイズは5MB以下にしてください",
     "uploadError": "アップロードに失敗しました"
+  },
+  "Wishlist": {
+    "title": "お気に入り",
+    "items": "件",
+    "empty": "お気に入りがありません",
+    "explore": "レストランを探す",
+    "pendingVerification": "確認待ち",
+    "verifiedSafe": "確認済み",
+    "bulkInquiryTitle": "AIエージェントに一括問い合わせ",
+    "bulkInquiryDescription": "未確認のレストランに対応可否を自動で問い合わせます",
+    "checkAllButton": "すべてに問い合わせ",
+    "sentCount": "{count}件送信しました",
+    "skippedCount": "{count}件スキップ（7日以内に送信済み）"
   }
 }
