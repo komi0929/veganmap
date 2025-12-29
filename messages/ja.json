@@ -1,12 +1,14 @@
+```json
 {
   "Index": {
     "title": "Veegan.jp",
-    "searchPlaceholder": "名前・タグで検索...",
+    "searchPlaceholder": "東京のビーガンレストラン...",
     "searchButton": "検索",
     "noResults": "レストランが見つかりません",
-    "addRestaurant": "レストランを追加",
-    "ownerDashboard": "オーナー管理",
-    "wishlist": "お気に入り"
+    "addRestaurant": "店舗を追加",
+    "ownerDashboard": "オーナー様へ",
+    "wishlist": "気になっているお店",
+    "viewMap": "地図を見る"
   },
   "Detail": {
     "verified": "認証済み",

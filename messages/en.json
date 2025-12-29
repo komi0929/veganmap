@@ -1,12 +1,13 @@
 {
   "Index": {
     "title": "Veegan.jp",
-    "searchPlaceholder": "Search by name or tag...",
+    "searchPlaceholder": "Search vegan restaurants...",
     "searchButton": "Search",
     "noResults": "No restaurants found",
-    "addRestaurant": "Add Restaurant",
-    "ownerDashboard": "Owner Dashboard",
-    "wishlist": "Wishlist"
+    "addRestaurant": "Add Place",
+    "ownerDashboard": "For Owners",
+    "wishlist": "Saved Places",
+    "viewMap": "View Map"
   },
   "Detail": {
     "verified": "Verified",
