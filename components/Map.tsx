@@ -1,7 +1,7 @@
 'use client';
 
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
-import { useCallback, useState, useEffect } from 'react';
+import { GoogleMap, useJsApiLoader, Marker, OverlayView } from '@react-google-maps/api';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { Restaurant } from '@/lib/types';
 
 const containerStyle = {
@@ -27,6 +27,7 @@ export default function Map({ restaurants, onMarkerClick, selectedId }: MapProps
     })
 
     const [map, setMap] = useState<google.maps.Map | null>(null)
+    const [zoom, setZoom] = useState(13);
 
     const onLoad = useCallback(function callback(map: google.maps.Map) {
         setMap(map)
@@ -61,9 +62,24 @@ export default function Map({ restaurants, onMarkerClick, selectedId }: MapProps
             const selected = restaurants.find(r => r.id === selectedId);
             if (selected?.latitude && selected?.longitude) {
                 map.panTo({ lat: selected.latitude, lng: selected.longitude });
+                // If zooming in to a selected marker, ensure zoom is high enough to see details
+                if (map.getZoom()! < 15) {
+                    map.setZoom(16);
+                }
             }
         }
     }, [map, selectedId, restaurants]);
+
+    const handleZoomChanged = () => {
+        if (map) {
+            setZoom(map.getZoom() || 13);
+        }
+    };
+
+    const getPixelPositionOffset = (width: number, height: number) => ({
+        x: -(width / 2),
+        y: -(height / 2),
+    })
 
     return isLoaded ? (
         <GoogleMap
@@ -72,6 +88,7 @@ export default function Map({ restaurants, onMarkerClick, selectedId }: MapProps
             zoom={13}
             onLoad={onLoad}
             onUnmount={onUnmount}
+            onZoomChanged={handleZoomChanged}
             options={{
                 disableDefaultUI: true,
                 zoomControl: true,
@@ -83,19 +100,53 @@ export default function Map({ restaurants, onMarkerClick, selectedId }: MapProps
                 ]
             }}
         >
-            {restaurants.map(r => (
-                r.latitude && r.longitude ? (
+            {restaurants.map(r => {
+                if (!r.latitude || !r.longitude) return null;
+
+                // Show photo marker if zoom is high enough AND photo exists
+                const showPhoto = zoom >= 15 && r.photos && r.photos.length > 0;
+                const photoUrl = showPhoto && r.photos ?
+                    `https://maps.googleapis.com/maps/api/place/photo?maxwidth=100&photo_reference=${r.photos[0]}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+                    : null;
+
+                const isSelected = selectedId === r.id;
+
+                return showPhoto && photoUrl ? (
+                    <OverlayView
+                        key={r.id}
+                        position={{ lat: r.latitude, lng: r.longitude }}
+                        mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                        getPixelPositionOffset={(x, y) => getPixelPositionOffset(60, 60)} // Center the 60x60 bubble
+                    >
+                        <div
+                            onClick={() => onMarkerClick?.(r)}
+                            className={`
+                                relative w-16 h-16 rounded-full border-2 shadow-lg cursor-pointer transition-transform hover:scale-110
+                                ${isSelected ? 'border-green-500 scale-110 z-50' : 'border-white z-10'}
+                            `}
+                        >
+                            <img
+                                src={photoUrl}
+                                alt={r.name}
+                                className="w-full h-full object-cover rounded-full bg-stone-200"
+                            />
+                            {isSelected && (
+                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-green-500 rotate-45 transform border-r border-b border-green-600"></div>
+                            )}
+                        </div>
+                    </OverlayView>
+                ) : (
                     <Marker
                         key={r.id}
                         position={{ lat: r.latitude, lng: r.longitude }}
                         title={r.name}
                         onClick={() => onMarkerClick?.(r)}
-                        icon={selectedId === r.id ? {
+                        icon={isSelected ? {
                             url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png'
                         } : undefined}
                     />
-                ) : null
-            ))}
+                );
+            })}
         </GoogleMap>
     ) : <></>
 }
