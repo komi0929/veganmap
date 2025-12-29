@@ -6,7 +6,7 @@ import RestaurantDetail from '@/components/RestaurantDetail';
 import LanguageToggle from '@/components/LanguageToggle';
 import PlacesSearch from '@/components/PlacesSearch';
 import AddRestaurantForm from '@/components/AddRestaurantForm';
-import { Search, Plus, Settings } from 'lucide-react';
+import { Search, Plus, Settings, Heart } from 'lucide-react';
 import Link from 'next/link';
 import Map from '@/components/Map';
 import { useEffect, useState, useMemo, useCallback } from 'react';
@@ -88,6 +88,13 @@ export default function Home() {
                                 <Plus size={16} />
                                 {t('addRestaurant')}
                             </button>
+                            <Link
+                                href="/wishlist"
+                                className="p-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg transition-colors"
+                                title={t('wishlist')}
+                            >
+                                <Heart size={18} />
+                            </Link>
                             <Link
                                 href="/owner"
                                 className="p-2 bg-stone-100 hover:bg-stone-200 text-stone-600 rounded-lg transition-colors"

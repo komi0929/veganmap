@@ -5,7 +5,8 @@
     "searchButton": "検索",
     "noResults": "レストランが見つかりません",
     "addRestaurant": "レストランを追加",
-    "ownerDashboard": "オーナー管理"
+    "ownerDashboard": "オーナー管理",
+    "wishlist": "お気に入り"
   },
   "Detail": {
     "verified": "認証済み",

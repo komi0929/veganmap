@@ -5,7 +5,8 @@
     "searchButton": "Search",
     "noResults": "No restaurants found",
     "addRestaurant": "Add Restaurant",
-    "ownerDashboard": "Owner Dashboard"
+    "ownerDashboard": "Owner Dashboard",
+    "wishlist": "Wishlist"
   },
   "Detail": {
     "verified": "Verified",

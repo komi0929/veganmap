@@ -1,6 +1,9 @@
-import { MapPin } from 'lucide-react';
+'use client';
+
+import { MapPin, Star } from 'lucide-react';
 import { Restaurant } from '@/lib/types';
 import { useTranslations } from 'next-intl';
+import FavoriteButton from './FavoriteButton';
 
 interface RestaurantListProps {
     restaurants: Restaurant[];
@@ -31,13 +34,22 @@ export default function RestaurantList({ restaurants, onSelect, selectedId }: Re
                             : 'border-stone-100 hover:shadow-md hover:border-stone-200'
                         }`}
                 >
-                    <div className="flex justify-between items-start">
-                        <h3 className="font-bold text-lg text-stone-800">{restaurant.name}</h3>
-                        {restaurant.is_verified ? (
-                            <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">Verified</span>
-                        ) : (
-                            <span className="px-2 py-1 text-xs bg-gray-100 text-gray-500 rounded-full">Pending</span>
-                        )}
+                    <div className="flex justify-between items-start gap-2">
+                        <h3 className="font-bold text-lg text-stone-800 flex-1">{restaurant.name}</h3>
+                        <div className="flex items-center gap-2">
+                            {(restaurant as any).rating && (
+                                <span className="flex items-center gap-1 text-sm text-stone-600">
+                                    <Star size={14} className="text-yellow-500 fill-yellow-500" />
+                                    {(restaurant as any).rating}
+                                </span>
+                            )}
+                            {restaurant.is_verified ? (
+                                <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">Verified</span>
+                            ) : (
+                                <span className="px-2 py-1 text-xs bg-gray-100 text-gray-500 rounded-full">Pending</span>
+                            )}
+                            <FavoriteButton restaurantId={restaurant.id} size={18} />
+                        </div>
                     </div>
                     <div className="mt-2 flex gap-2 flex-wrap">
                         {restaurant.tags?.map(tag => (
@@ -55,4 +67,5 @@ export default function RestaurantList({ restaurants, onSelect, selectedId }: Re
         </div>
     );
 }
+
 
