@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+// Places API (New) - v1 endpoints
+const PLACES_API_BASE = 'https://places.googleapis.com/v1/places:searchText';
+
 // Locations to search (Japan major cities)
 const SEARCH_LOCATIONS = [
     { name: '東京', lat: 35.6762, lng: 139.6503 },
@@ -21,37 +24,56 @@ const SEARCH_QUERIES = [
 ];
 
 interface PlaceResult {
-    place_id: string;
-    name: string;
-    formatted_address: string;
-    geometry: { location: { lat: number; lng: number } };
+    id: string;
+    displayName: { text: string; languageCode: string };
+    formattedAddress: string;
+    location: { latitude: number; longitude: number };
     rating?: number;
-    user_ratings_total?: number;
+    userRatingCount?: number;
     types?: string[];
 }
 
-async function searchPlaces(query: string, lat: number, lng: number, apiKey: string): Promise<PlaceResult[]> {
-    const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
-    url.searchParams.set('query', query);
-    url.searchParams.set('location', `${lat},${lng}`);
-    url.searchParams.set('radius', '25000');
-    url.searchParams.set('key', apiKey);
-    url.searchParams.set('language', 'ja');
+async function searchPlacesNew(query: string, lat: number, lng: number, apiKey: string): Promise<PlaceResult[]> {
+    const requestBody = {
+        textQuery: query,
+        locationBias: {
+            circle: {
+                center: { latitude: lat, longitude: lng },
+                radius: 25000.0  // 25km
+            }
+        },
+        languageCode: 'ja',
+        maxResultCount: 20
+    };
 
-    const response = await fetch(url.toString());
-    const data = await response.json();
+    try {
+        const response = await fetch(PLACES_API_BASE, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Goog-Api-Key': apiKey,
+                'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.types'
+            },
+            body: JSON.stringify(requestBody)
+        });
 
-    if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
-        console.error('Google Places API error:', data.status, data.error_message);
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Places API error:', response.status, errorText);
+            return [];
+        }
+
+        const data = await response.json();
+        return data.places || [];
+    } catch (error) {
+        console.error('Fetch error:', error);
         return [];
     }
-
-    return data.results || [];
 }
 
 function inferTags(place: PlaceResult, query: string): string[] {
     const tags: string[] = [];
-    const nameLower = place.name.toLowerCase();
+    const nameLower = place.displayName.text.toLowerCase();
     const queryLower = query.toLowerCase();
 
     if (queryLower.includes('vegan') || nameLower.includes('vegan') || nameLower.includes('ビーガン')) {
@@ -78,7 +100,6 @@ function inferTags(place: PlaceResult, query: string): string[] {
 }
 
 export async function POST(request: NextRequest) {
-    // Security check - only allow with correct secret
     const { searchParams } = new URL(request.url);
     const secret = searchParams.get('secret');
 
@@ -109,21 +130,21 @@ export async function POST(request: NextRequest) {
 
         for (const query of SEARCH_QUERIES) {
             try {
-                const results = await searchPlaces(query, location.lat, location.lng, apiKey);
+                const results = await searchPlacesNew(query, location.lat, location.lng, apiKey);
                 logs.push(`  - "${query}": ${results.length} results`);
 
                 for (const place of results) {
-                    if (seenPlaceIds.has(place.place_id)) continue;
-                    seenPlaceIds.add(place.place_id);
+                    if (seenPlaceIds.has(place.id)) continue;
+                    seenPlaceIds.add(place.id);
 
                     allRestaurants.push({
-                        name: place.name,
-                        google_place_id: place.place_id,
-                        address: place.formatted_address,
-                        latitude: place.geometry.location.lat,
-                        longitude: place.geometry.location.lng,
+                        name: place.displayName.text,
+                        google_place_id: place.id,
+                        address: place.formattedAddress,
+                        latitude: place.location.latitude,
+                        longitude: place.location.longitude,
                         rating: place.rating || null,
-                        user_ratings_total: place.user_ratings_total || null,
+                        user_ratings_total: place.userRatingCount || null,
                         tags: inferTags(place, query),
                         is_verified: false,
                         dietary_tags: {
@@ -138,7 +159,7 @@ export async function POST(request: NextRequest) {
                 }
 
                 // Rate limiting
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await new Promise(resolve => setTimeout(resolve, 300));
             } catch (error) {
                 logs.push(`  - Error: ${error}`);
             }
