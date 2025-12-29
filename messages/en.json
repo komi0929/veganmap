@@ -19,8 +19,11 @@
     "makeReservation": "Make a Reservation",
     "syncing": "Syncing",
     "openingHours": "Opening Hours",
-    "dietaryOptions": "Dietary Options",
-    "likelyAvailable": "Likely Available Items",
+    "dietaryOptions": "Dietary Options (Estimated)",
+    "popularDishes": "Popular Dishes",
+    "fromReviews": "From Reviews",
+    "mentions": "mentions",
+    "likelyAvailable": "Likely Available Items (AI Predicted)",
     "reviewHighlights": "Review Highlights",
     "lastUpdated": "Last updated"
   },

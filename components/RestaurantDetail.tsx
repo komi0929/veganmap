@@ -215,12 +215,33 @@ export default function RestaurantDetail({ restaurant, onClose }: RestaurantDeta
                         </div>
                     )}
 
-                    {/* Predictive Menu Items */}
-                    {predictiveItems.length > 0 && (
-                        <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
+
+                    {/* Real Menu (Mined from Reviews) */}
+                    {(displayData.real_menu && displayData.real_menu.length > 0) ? (
+                        <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border border-orange-200">
                             <div className="flex items-center gap-2 mb-3">
-                                <Utensils size={16} className="text-amber-600" />
-                                <p className="text-sm font-medium text-amber-800">{t('likelyAvailable')}</p>
+                                <Utensils size={16} className="text-orange-600" />
+                                <p className="text-sm font-medium text-orange-900">
+                                    {t('popularDishes')} <span className="text-orange-600/70 text-xs font-normal">({t('fromReviews')})</span>
+                                </p>
+                            </div>
+                            <div className="grid grid-cols-1 gap-2">
+                                {displayData.real_menu.map((item: any) => (
+                                    <div key={item.name} className="flex items-center justify-between text-sm bg-white/60 p-2 rounded-lg">
+                                        <span className="font-medium text-stone-800">{item.name}</span>
+                                        <span className="text-xs text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded flex items-center gap-1">
+                                            <Star size={10} className="fill-orange-600" /> {item.count} {t('mentions')}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : predictiveItems.length > 0 && (
+                        // Fallback to Predictive Menu
+                        <div className="p-4 bg-gradient-to-r from-stone-50 to-gray-50 rounded-xl border border-stone-200">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Utensils size={16} className="text-stone-400" />
+                                <p className="text-sm font-medium text-stone-600">{t('likelyAvailable')}</p>
                             </div>
                             <div className="space-y-2">
                                 {predictiveItems.map(item => (

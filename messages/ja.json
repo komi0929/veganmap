@@ -19,9 +19,12 @@
     "makeReservation": "予約する",
     "syncing": "同期中",
     "openingHours": "営業時間",
-    "dietaryOptions": "食事対応",
-    "likelyAvailable": "提供可能メニュー（推定）",
-    "reviewHighlights": "レビューハイライト",
+    "dietaryOptions": "対応オプション (推定)",
+    "popularDishes": "人気のメニュー",
+    "fromReviews": "口コミで話題",
+    "mentions": "件の言及",
+    "likelyAvailable": "提供されている可能性が高いメニュー (AI予測)",
+    "reviewHighlights": "口コミハイライト",
     "lastUpdated": "最終更新"
   },
   "Reservation": {

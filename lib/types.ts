@@ -15,8 +15,10 @@ export type Restaurant = {
     phone_number?: string | null;
     google_maps_uri?: string | null;
     opening_hours?: any | null;
-    rating?: number | null;
-    user_ratings_total?: number | null;
+    rating?: number;
+    user_ratings_total?: number;
+    dietary_tags?: Record<string, boolean>;
+    real_menu?: any[]; // Allow JSONB
 };
 
 export type ReservationStatus = 'pending' | 'confirmed' | 'rejected';

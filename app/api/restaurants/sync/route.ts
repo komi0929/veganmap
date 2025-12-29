@@ -68,9 +68,97 @@ function inferDietaryTags(reviews: any[], name: string): Record<string, boolean>
         alcohol_free: allText.includes('no alcohol') || allText.includes('alcohol-free') || allText.includes('halal'),
         nut_free: allText.includes('nut-free') || allText.includes('no nuts'),
         soy_free: allText.includes('soy-free') || allText.includes('no soy'),
-        halal: allText.includes('halal'),
+        halal: allText.includes('halal') || allText.includes('ハラル'),
         kosher: allText.includes('kosher')
     };
+}
+
+interface MenuItem {
+    name: string;
+    count: number;
+    sentiment: number; // Simple indicator based on rating of review
+}
+
+function extractRealMenu(reviews: any[]): MenuItem[] {
+    if (!reviews || !Array.isArray(reviews)) return [];
+
+    const menuCandidates = new Map<string, { count: number; totalRating: number }>();
+
+    // Simple patterns to catch food names
+    // EN: "the [Food] was", "ate [Food]", "ordered [Food]"
+    const enPatterns = [
+        /(?:the|a)\s+([a-zA-Z\s]+?)\s+(?:was|is)\s+(?:delicious|good|great|amazing|tasty|excellent)/i,
+        /(?:ordered|ate|had|tried)\s+(?:the\s+)?([a-zA-Z\s]+?)(?:\.|,|!|\s+and|\s+was)/i,
+        /(?:recommend|suggest)\s+(?:the\s+)?([a-zA-Z\s]+?)(?:\.|,|!)/i
+    ];
+
+    // JA: "「[料理]」が", "[料理]を食べました", "[料理]が美味しかった"
+    // Note: Japanese matching is harder without tokenization, so we rely on explicit brackets or simple particles
+    const jaPatterns = [
+        /「(.+?)」(?:\s*が|\s*を)/,
+        /([^、。!?\s]+?)(?:が|は)(?:美味|おい|うま)/, // [Food] was delicious
+        /([^、。!?\s]+?)(?:を)(?:注文|頼|食|いただ)/ // Ordered/Ate [Food]
+    ];
+
+    // Blocklist for common non-food words captured by simple regex
+    const stopWords = new Set([
+        'it', 'that', 'this', 'everything', 'staff', 'service', 'place', 'atmosphere', 'price',
+        'dinner', 'lunch', 'breakfast', 'meal', 'food', 'restaurant', 'option', 'menu', 'vegan', 'vegetarian',
+        '店', '雰囲気', 'スタッフ', '接客', '値段', '価格', '全て', 'これ', 'それ', 'ここ', '料理', '食事'
+    ]);
+
+    for (const review of reviews) {
+        const text = review.text || '';
+        const rating = review.rating || 3;
+
+        // Process English matches
+        for (const pattern of enPatterns) {
+            const matches = text.match(new RegExp(pattern, 'g'));
+            if (matches) {
+                matches.forEach((matchStr: string) => {
+                    const capture = matchStr.match(pattern)?.[1]?.trim().toLowerCase();
+                    if (capture && capture.length > 2 && capture.length < 30 && !stopWords.has(capture)) {
+                        // Clean up "best" "amazing" prefixes if captured
+                        const cleanName = capture.replace(/^(?:best|amazing|delicious|great)\s+/, '');
+
+                        const current = menuCandidates.get(cleanName) || { count: 0, totalRating: 0 };
+                        menuCandidates.set(cleanName, {
+                            count: current.count + 1,
+                            totalRating: current.totalRating + rating
+                        });
+                    }
+                });
+            }
+        }
+
+        // Process Japanese matches
+        for (const pattern of jaPatterns) {
+            const matches = text.match(new RegExp(pattern, 'g'));
+            if (matches) {
+                matches.forEach((matchStr: string) => {
+                    const capture = matchStr.match(pattern)?.[1]?.trim();
+                    if (capture && capture.length > 1 && capture.length < 20 && !stopWords.has(capture)) {
+                        const current = menuCandidates.get(capture) || { count: 0, totalRating: 0 };
+                        menuCandidates.set(capture, {
+                            count: current.count + 1,
+                            totalRating: current.totalRating + rating
+                        });
+                    }
+                });
+            }
+        }
+    }
+
+    // Convert map to array and sort
+    return Array.from(menuCandidates.entries())
+        .map(([name, data]) => ({
+            name: name.replace(/\b\w/g, l => l.toUpperCase()), // Title Case for EN
+            count: data.count,
+            sentiment: data.totalRating / data.count
+        }))
+        .filter(item => item.count >= 1) // Keep everything for now, can filter by count > 1 for stricter threshold
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 8); // Top 8 items
 }
 
 export async function POST(request: NextRequest) {
@@ -170,6 +258,7 @@ export async function POST(request: NextRequest) {
             price_level: place.price_level,
             phone_number: place.formatted_phone_number,
             google_maps_uri: place.url,
+            real_menu: extractRealMenu(place.reviews), // NEW: Extract real menu
             last_synced_at: new Date().toISOString()
         };
 
