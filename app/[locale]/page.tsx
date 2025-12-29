@@ -9,6 +9,7 @@ import AddRestaurantForm from '@/components/AddRestaurantForm';
 import { Search, Plus, Settings, Heart } from 'lucide-react';
 import Link from 'next/link';
 import Map from '@/components/Map';
+import MobileRestaurantCarousel from '@/components/MobileRestaurantCarousel';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { Restaurant } from '@/lib/types';
@@ -72,11 +73,39 @@ export default function Home() {
     };
 
     return (
-        <main className="flex min-h-screen relative flex-col md:flex-row">
+        <main className="flex min-h-screen relative flex-col md:flex-row overflow-hidden bg-stone-50">
             <LanguageToggle />
 
-            {/* Sidebar / List View */}
-            <div className="w-full md:w-[400px] h-[50vh] md:h-screen flex flex-col bg-white z-10 shadow-xl border-r border-stone-100 order-2 md:order-1">
+            {/* Mobile Header (Floating) */}
+            <div className="md:hidden absolute top-0 left-0 right-0 z-30 p-4 bg-gradient-to-b from-black/50 to-transparent pointer-events-none">
+                <div className="pointer-events-auto flex gap-2">
+                    <div className="relative flex-1">
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder={t('searchPlaceholder')}
+                            className="w-full pl-10 pr-4 py-3 bg-white/90 backdrop-blur-md shadow-lg border-none rounded-2xl text-sm focus:ring-2 focus:ring-green-500 outline-none transition-all placeholder:text-stone-400"
+                        />
+                        <Search className="absolute left-3 top-3.5 text-stone-400" size={18} />
+                    </div>
+                    <Link
+                        href="/wishlist"
+                        className="p-3 bg-white/90 backdrop-blur-md shadow-lg text-red-500 rounded-2xl active:scale-95 transition-transform"
+                    >
+                        <Heart size={20} className={restaurants.some(r => false) ? "fill-red-500" : ""} />
+                    </Link>
+                    <button
+                        onClick={() => setShowPlacesSearch(true)}
+                        className="p-3 bg-green-600 shadow-lg text-white rounded-2xl active:scale-95 transition-transform"
+                    >
+                        <Plus size={20} />
+                    </button>
+                </div>
+            </div>
+
+            {/* Desktop Sidebar / List View (Hidden on Mobile) */}
+            <div className="hidden md:flex w-full md:w-[400px] h-screen flex-col bg-white z-10 shadow-xl border-r border-stone-100 shrink-0">
                 <header className="p-4 border-b border-stone-100">
                     <div className="flex items-center justify-between">
                         <h1 className="text-xl font-bold text-stone-900 tracking-tight">{t('title')}</h1>
@@ -125,11 +154,20 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* Map View */}
-            <div className="relative w-full md:flex-1 h-[50vh] md:h-screen bg-stone-200 order-1 md:order-2">
+            {/* Map View (Full screen on Mobile, Right side on Desktop) */}
+            <div className="absolute inset-0 md:static md:flex-1 h-screen bg-stone-200 z-0">
                 <Map
                     restaurants={filteredRestaurants}
                     onMarkerClick={handleSelectRestaurant}
+                    selectedId={selectedRestaurant?.id}
+                />
+            </div>
+
+            {/* Mobile Carousel (Bottom Overlay) */}
+            <div className="md:hidden">
+                <MobileRestaurantCarousel
+                    restaurants={filteredRestaurants}
+                    onSelect={handleSelectRestaurant}
                     selectedId={selectedRestaurant?.id}
                 />
             </div>
