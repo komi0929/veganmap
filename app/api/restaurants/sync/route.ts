@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
         const placeId = restaurant.google_place_id;
         const params = new URLSearchParams({
             place_id: placeId,
-            fields: 'name,formatted_address,geometry,opening_hours,photos,reviews,rating,user_ratings_total',
+            fields: 'name,formatted_address,geometry,opening_hours,photos,reviews,rating,user_ratings_total,price_level,formatted_phone_number,url',
             key: apiKey,
             language: 'ja'
         });
@@ -167,6 +167,9 @@ export async function POST(request: NextRequest) {
             photos: curatedPhotos,
             cached_reviews: cachedReviews,
             dietary_tags: mergedTags,
+            price_level: place.price_level,
+            phone_number: place.formatted_phone_number,
+            google_maps_uri: place.url,
             last_synced_at: new Date().toISOString()
         };
 

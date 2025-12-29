@@ -11,6 +11,12 @@ export type Restaurant = {
 
     // Extra fields from DB
     created_at?: string;
+    price_level?: number | null;
+    phone_number?: string | null;
+    google_maps_uri?: string | null;
+    opening_hours?: any | null;
+    rating?: number | null;
+    user_ratings_total?: number | null;
 };
 
 export type ReservationStatus = 'pending' | 'confirmed' | 'rejected';

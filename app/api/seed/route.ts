@@ -5,15 +5,9 @@ import { createClient } from '@supabase/supabase-js';
 const PLACES_API_BASE = 'https://places.googleapis.com/v1/places:searchText';
 
 // Locations to search (Japan major cities)
+// Locations to search (Restricted to Fukuoka for Phase 1)
 const SEARCH_LOCATIONS = [
-    { name: '東京', lat: 35.6762, lng: 139.6503 },
-    { name: '大阪', lat: 34.6937, lng: 135.5023 },
-    { name: '京都', lat: 35.0116, lng: 135.7681 },
     { name: '福岡', lat: 33.5904, lng: 130.4017 },
-    { name: '名古屋', lat: 35.1815, lng: 136.9066 },
-    { name: '札幌', lat: 43.0618, lng: 141.3545 },
-    { name: '神戸', lat: 34.6901, lng: 135.1956 },
-    { name: '横浜', lat: 35.4437, lng: 139.6380 },
 ];
 
 const SEARCH_QUERIES = [

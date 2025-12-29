@@ -16,6 +16,9 @@ export interface RestaurantWithSync {
     photos: string[] | null;
     cached_reviews: ReviewSnippet[];
     last_synced_at: string | null;
+    phone_number: string | null;
+    price_level: number | null;
+    google_maps_uri: string | null;
 }
 
 export interface DietaryTags {
