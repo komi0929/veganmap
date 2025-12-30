@@ -56,7 +56,7 @@ export default function OwnerDashboard() {
             // Attach restaurant info to each reservation and map dietary_requirements
             const enrichedReservations = reservationData.map((r: any) => ({
                 ...r,
-                restaurant: restaurantData?.find(rest => rest.id === r.restaurant_id),
+                restaurant: (restaurantData as Restaurant[])?.find(rest => rest.id === r.restaurant_id),
                 dietary_request: (r.dietary_requirements as unknown as { vegan: boolean; vegetarian: boolean; gluten_free: boolean; allergies?: string; other?: string }) || {
                     vegan: false,
                     vegetarian: false,
