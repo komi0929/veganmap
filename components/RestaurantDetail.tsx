@@ -165,6 +165,12 @@ export default function RestaurantDetail({ restaurant, onClose }: RestaurantDeta
                                     <RefreshCw size={12} className="animate-spin" /> {t('syncing')}
                                 </span>
                             )}
+                            {/* Vibe Tags */}
+                            {displayData.vibe_tags && displayData.vibe_tags.map(tag => (
+                                <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-purple-500/80 text-white rounded-full backdrop-blur-md shadow-sm border border-purple-300/30">
+                                    ✨ {tag}
+                                </span>
+                            ))}
                             {/* Local vs Tourist Badge */}
 
                         </div>

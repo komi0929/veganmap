@@ -23,6 +23,7 @@ export interface RestaurantWithSync {
     website?: string;
     real_menu?: { name: string; count: number; sentiment: number }[];
     ai_summary?: { pros: string[] };
+    vibe_tags?: string[];
 }
 
 export interface DietaryTags {

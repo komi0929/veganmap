@@ -21,6 +21,7 @@ export type Restaurant = {
     dietary_tags?: Record<string, boolean>;
     real_menu?: { name: string; count: number; sentiment: number }[];
     ai_summary?: { pros: string[] };
+    vibe_tags?: string[];
 };
 
 export type ReservationStatus = 'pending' | 'confirmed' | 'rejected';

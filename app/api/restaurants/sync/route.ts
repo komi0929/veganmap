@@ -1,8 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const GOOGLE_PLACES_API_URL = 'https://maps.googleapis.com/maps/api/place';
 const SYNC_THRESHOLD_HOURS = 72;
+
+// Helper to download image and convert to Base64 for Gemini
+async function downloadImageAsBase64(photoReference: string, apiKey: string): Promise<string | null> {
+    try {
+        const url = `${GOOGLE_PLACES_API_URL}/photo?maxwidth=400&photo_reference=${photoReference}&key=${apiKey}`;
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        const arrayBuffer = await response.arrayBuffer();
+        return Buffer.from(arrayBuffer).toString('base64');
+    } catch (error) {
+        console.error('Failed to download image for AI:', error);
+        return null;
+    }
+}
+
+// Analyze Vibe using Gemini
+async function analyzeVibe(photoReferences: string[], apiKey: string): Promise<string[]> {
+    const geminiKey = process.env.GEMINI_API_KEY;
+    if (!geminiKey || !photoReferences || photoReferences.length === 0) return [];
+
+    try {
+        const genAI = new GoogleGenerativeAI(geminiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        // Analyze up to 2 photos to save time/quota
+        const targetPhotos = photoReferences.slice(0, 2);
+        const imageParts = [];
+
+        for (const ref of targetPhotos) {
+            const b64 = await downloadImageAsBase64(ref, apiKey);
+            if (b64) {
+                imageParts.push({
+                    inlineData: {
+                        data: b64,
+                        mimeType: "image/jpeg"
+                    }
+                });
+            }
+        }
+
+        if (imageParts.length === 0) return [];
+
+        const prompt = `Analyze these restaurant interior/food photos. 
+        Identify the atmosphere/vibe. 
+        Return a JSON array containing ONLY the matching tags from this specific list: 
+        ["Romantic", "Work Friendly", "Solo Friendly", "Lively", "Quiet", "Family Friendly"]. 
+        Example: ["Romantic", "Quiet"]`;
+
+        const result = await model.generateContent([prompt, ...imageParts]);
+        const response = await result.response;
+        const text = response.text();
+
+        // Extract JSON array from text (it might contain markdown code blocks)
+        const jsonMatch = text.match(/\[.*\]/s);
+        if (jsonMatch) {
+            return JSON.parse(jsonMatch[0]);
+        }
+        return [];
+    } catch (error) {
+        console.error('Gemini Vibe Analysis failed:', error);
+        return [];
+    }
+}
 
 // Keywords for review mining
 const REVIEW_KEYWORDS = [
@@ -281,8 +345,13 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Analyze reviews
+        // Analyze reviews for AI Highlights
         const aiSummary = analyzeReviews(place.reviews || []);
+
+        // Analyze Vibe (Gemini) - Only run if not already present or force sync? 
+        // For now run every sync (which is protected by time threshold)
+        // Note: passing curatedPhotos which are references
+        const vibeTags = await analyzeVibe(curatedPhotos, apiKey);
 
         // Update restaurant in database
         const updateData = {
@@ -301,6 +370,7 @@ export async function POST(request: NextRequest) {
             real_menu: extractRealMenu(place.reviews),
             // Removed local_ratio as per user request
             ai_summary: aiSummary, // Only positive highlights
+            vibe_tags: vibeTags,
             last_synced_at: new Date().toISOString()
         };
 
