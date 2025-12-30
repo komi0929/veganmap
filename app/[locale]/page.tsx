@@ -223,7 +223,9 @@ export default function Home() {
             {/* Detail Modal */}
             <RestaurantDetail
                 restaurant={selectedRestaurant}
+                allRestaurants={restaurants}
                 onClose={() => setSelectedRestaurant(null)}
+                onNavigate={setSelectedRestaurant}
             />
 
             {/* Places Search Modal */}

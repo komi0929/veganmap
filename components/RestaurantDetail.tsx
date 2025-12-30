@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Phone, MapPin, X, Globe, Copy, Check, Instagram, Facebook, Star, Clock, Utensils, ExternalLink, RefreshCw, MessageSquare, Calendar } from 'lucide-react';
+import { Phone, MapPin, X, Globe, Copy, Check, Instagram, Facebook, Star, Clock, Utensils, ExternalLink, RefreshCw, MessageSquare, Calendar, Sparkles } from 'lucide-react';
 import { Restaurant } from '@/lib/types';
 import { useTranslations, useLocale } from 'next-intl';
 import ReservationForm from './ReservationForm';
+import ConciergeModal from './ConciergeModal';
 import { syncRestaurantIfNeeded, getPredictiveMenuItems, formatLastSyncTime, RestaurantWithSync, ReviewSnippet } from '@/lib/restaurantSync';
 import { format } from 'date-fns';
 import { enUS, ja } from 'date-fns/locale';
@@ -20,12 +21,15 @@ const getSocialLink = (url: string | null | undefined) => {
 
 interface RestaurantDetailProps {
     restaurant: Restaurant | null;
+    allRestaurants?: Restaurant[];
     onClose: () => void;
+    onNavigate?: (restaurant: Restaurant) => void;
 }
 
-export default function RestaurantDetail({ restaurant, onClose }: RestaurantDetailProps) {
+export default function RestaurantDetail({ restaurant, allRestaurants = [], onClose, onNavigate }: RestaurantDetailProps) {
     const t = useTranslations('Detail');
     const [showReservation, setShowReservation] = useState(false);
+    const [showConcierge, setShowConcierge] = useState(false);
     const [syncedData, setSyncedData] = useState<RestaurantWithSync | null>(null);
     const [isSyncing, setIsSyncing] = useState(false);
 
@@ -404,6 +408,29 @@ export default function RestaurantDetail({ restaurant, onClose }: RestaurantDeta
                     </button>
                 </div >
             </div >
+            {/* Concierge Modal */}
+            {showConcierge && restaurant && (
+                <ConciergeModal
+                    anchor={restaurant}
+                    candidates={allRestaurants}
+                    onClose={() => setShowConcierge(false)}
+                    onSelect={(r) => {
+                        setShowConcierge(false);
+                        onNavigate?.(r);
+                    }}
+                />
+            )}
+
+            {/* Floating Concierge Button */}
+            <div className="absolute bottom-6 right-6 z-40">
+                <button
+                    onClick={() => setShowConcierge(true)}
+                    className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-5 py-3 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition font-bold"
+                >
+                    <Sparkles size={20} className="fill-white/20" />
+                    Next Stop?
+                </button>
+            </div>
         </div >
     );
 }
