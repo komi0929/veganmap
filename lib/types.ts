@@ -44,3 +44,23 @@ export type Reservation = {
     created_at?: string;
 };
 
+
+export interface Bookmark {
+    id: string;
+    user_id: string;
+    restaurant_id: string;
+    created_at: string;
+    // Joined
+    restaurants?: Restaurant;
+}
+
+export interface Visit {
+    id: string;
+    user_id: string;
+    restaurant_id: string;
+    rating?: number;
+    comment?: string;
+    created_at: string;
+    // Joined
+    restaurants?: Restaurant;
+}

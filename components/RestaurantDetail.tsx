@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Phone, MapPin, X, Globe, Copy, Check, Instagram, Facebook, Star, Clock, Utensils, ExternalLink, RefreshCw, MessageSquare, Calendar, Sparkles } from 'lucide-react';
+import { Phone, MapPin, X, Globe, Copy, Check, Instagram, Facebook, Star, Clock, Utensils, ExternalLink, RefreshCw, MessageSquare, Calendar, Sparkles, Heart, CheckCircle } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
 import { Restaurant } from '@/lib/types';
 import { useTranslations, useLocale } from 'next-intl';
 import ReservationForm from './ReservationForm';
@@ -32,6 +33,55 @@ export default function RestaurantDetail({ restaurant, allRestaurants = [], onCl
     const [showConcierge, setShowConcierge] = useState(false);
     const [syncedData, setSyncedData] = useState<RestaurantWithSync | null>(null);
     const [isSyncing, setIsSyncing] = useState(false);
+    // Social State
+    const [user, setUser] = useState<any>(null);
+    const [isBookmarked, setIsBookmarked] = useState(false);
+    const [isVisited, setIsVisited] = useState(false);
+
+    useEffect(() => {
+        // Check Auth
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser(session?.user ?? null);
+            if (session?.user && restaurant) {
+                checkSocialStatus(session.user.id, restaurant.id);
+            }
+        });
+    }, [restaurant]);
+
+    const checkSocialStatus = async (userId: string, restaurantId: string) => {
+        const { data: bookmark } = await supabase.from('bookmarks').select('*').eq('user_id', userId).eq('restaurant_id', restaurantId).single();
+        const { data: visit } = await supabase.from('visits').select('*').eq('user_id', userId).eq('restaurant_id', restaurantId).single();
+        setIsBookmarked(!!bookmark);
+        setIsVisited(!!visit);
+    };
+
+    const toggleBookmark = async () => {
+        if (!user || !restaurant) {
+            alert("Please Sign In first!"); // Simple prompt for now
+            return;
+        }
+        if (isBookmarked) {
+            await supabase.from('bookmarks').delete().eq('user_id', user.id).eq('restaurant_id', restaurant.id);
+            setIsBookmarked(false);
+        } else {
+            await supabase.from('bookmarks').insert({ user_id: user.id, restaurant_id: restaurant.id });
+            setIsBookmarked(true);
+        }
+    };
+
+    const toggleVisit = async () => {
+        if (!user || !restaurant) {
+            alert("Please Sign In first!");
+            return;
+        }
+        if (isVisited) {
+            await supabase.from('visits').delete().eq('user_id', user.id).eq('restaurant_id', restaurant.id);
+            setIsVisited(false);
+        } else {
+            await supabase.from('visits').insert({ user_id: user.id, restaurant_id: restaurant.id });
+            setIsVisited(true);
+        }
+    };
 
     // Reset synced data when restaurant changes
     useEffect(() => {
@@ -177,6 +227,23 @@ export default function RestaurantDetail({ restaurant, allRestaurants = [], onCl
                             ))}
                             {/* Local vs Tourist Badge */}
 
+                            {/* Social Actions */}
+                            <div className="flex gap-2 mt-2">
+                                <button
+                                    onClick={toggleBookmark}
+                                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-bold transition ${isBookmarked ? 'bg-pink-500 text-white shadow-md' : 'bg-white/50 text-stone-600 hover:bg-white border border-stone-200'}`}
+                                >
+                                    <Heart size={16} className={isBookmarked ? 'fill-white' : ''} />
+                                    {isBookmarked ? 'Saved' : 'Want to Go'}
+                                </button>
+                                <button
+                                    onClick={toggleVisit}
+                                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-bold transition ${isVisited ? 'bg-green-500 text-white shadow-md' : 'bg-white/50 text-stone-600 hover:bg-white border border-stone-200'}`}
+                                >
+                                    <CheckCircle size={16} className={isVisited ? 'fill-white' : ''} />
+                                    {isVisited ? 'Visited' : 'Have been'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div >
