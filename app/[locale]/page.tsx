@@ -8,6 +8,7 @@ import PlacesSearch from '@/components/PlacesSearch';
 import AddRestaurantForm from '@/components/AddRestaurantForm';
 import { Search, Plus, Settings, Heart, Grid, Map as MapIcon, List } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import Map from '@/components/Map';
 import MobileRestaurantCarousel from '@/components/MobileRestaurantCarousel';
 import DishGallery from '@/components/DishGallery';
@@ -129,7 +130,17 @@ export default function Home() {
             <div className="hidden md:flex w-full md:w-[400px] h-screen flex-col bg-white z-10 shadow-xl border-r border-stone-100 shrink-0">
                 <header className="p-4 border-b border-stone-100">
                     <div className="flex items-center justify-between">
-                        <h1 className="text-xl font-bold text-stone-900 tracking-tight">{t('title')}</h1>
+                        <Link href="/">
+                            <div className="relative w-40 h-8">
+                                <Image
+                                    src="/logo.png"
+                                    alt="Veganmap.jp"
+                                    fill
+                                    className="object-contain object-left"
+                                    priority
+                                />
+                            </div>
+                        </Link>
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setShowPlacesSearch(true)}
