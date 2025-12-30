@@ -21,6 +21,8 @@ export interface RestaurantWithSync {
     google_maps_uri?: string;
     website?: string;
     real_menu?: { name: string; count: number; sentiment: number }[];
+    local_ratio?: number;
+    ai_summary?: { pros: string[]; cons: string[]; tips: string[] };
 }
 
 export interface DietaryTags {

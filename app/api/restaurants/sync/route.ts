@@ -57,6 +57,75 @@ function prioritizePhotos(photos: any[]): string[] {
         .map(p => p.photo_reference);
 }
 
+// Helper to check if text contains Japanese characters (Hiragana, Katakana, Kanji)
+function containsJapanese(text: string): boolean {
+    return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
+}
+
+// Analyze reviews for Local Ratio and Honest Summary
+function analyzeReviews(reviews: any[]) {
+    if (!reviews || reviews.length === 0) return { localRatio: 0, summary: null };
+
+    let japaneseCount = 0;
+    const pros: string[] = [];
+    const cons: string[] = [];
+    const tips: string[] = [];
+
+    // Simple rule-based extraction patterns (can be improved with LLM later)
+    const positivePatterns = [
+        /(?:delicious|amazing|great|best|excellent|tasty) ([a-zA-Z\s]+)/i,
+        /([a-zA-Z\s]+) (?:was|is) (?:delicious|amazing|great|best|excellent|tasty)/i
+    ];
+    const negativePatterns = [
+        /(?:bad|slow|expensive|noisy|small|wait) ([a-zA-Z\s]+)/i,
+        /([a-zA-Z\s]+) (?:was|is) (?:bad|slow|expensive|noisy|small|wait)/i,
+        /(?:too) (?:salty|sweet|spicy|expensive|crowded)/i
+    ];
+    const tipPatterns = [
+        /(?:go|visit|try) (?:before|after|at) ([0-9apm\s]+)/i,
+        /(?:reservation|booking) (?:is|was) (?:required|recommended)/i,
+        /(?:ask|order|try) (?:for)? the ([a-zA-Z\s]+)/i
+    ];
+
+    reviews.forEach(review => {
+        const text = review.text || '';
+        if (containsJapanese(text)) {
+            japaneseCount++;
+        }
+
+        // Extract Pros/Cons/Tips (English only for V1 simple regex)
+        // Note: For Japanese analysis we'd need MeCab or similar, skipping for V1 regex
+        if (!containsJapanese(text)) {
+            positivePatterns.forEach(p => {
+                const match = text.match(p);
+                if (match) pros.push(match[0]); // extraction might be too long, keeping simple
+            });
+            negativePatterns.forEach(p => {
+                const match = text.match(p);
+                if (match) cons.push(match[0]);
+            });
+            tipPatterns.forEach(p => {
+                const match = text.match(p);
+                if (match) tips.push(match[0]);
+            });
+        }
+    });
+
+    // Clean up extracted phrases (dedupe and limit)
+    const uniquePros = Array.from(new Set(pros)).slice(0, 3);
+    const uniqueCons = Array.from(new Set(cons)).slice(0, 3);
+    const uniqueTips = Array.from(new Set(tips)).slice(0, 3);
+
+    return {
+        localRatio: japaneseCount / reviews.length,
+        summary: (uniquePros.length > 0 || uniqueCons.length > 0) ? {
+            pros: uniquePros,
+            cons: uniqueCons,
+            tips: uniqueTips
+        } : null
+    };
+}
+
 function inferDietaryTags(reviews: any[], name: string): Record<string, boolean> {
     const allText = [
         name.toLowerCase(),
@@ -256,33 +325,48 @@ export async function POST(request: NextRequest) {
             cached_reviews: cachedReviews,
             dietary_tags: mergedTags,
             price_level: place.price_level,
-            phone_number: place.formatted_phone_number,
-            google_maps_uri: place.url,
-            website: place.website, // NEW: Capture website
-            real_menu: extractRealMenu(place.reviews), // NEW: Extract real menu
-            last_synced_at: new Date().toISOString()
-        };
+            // Analyze reviews
+            const { localRatio, summary } = analyzeReviews(place.reviews || []);
 
-        const { data: updatedRestaurant, error: updateError } = await supabase
-            .from('restaurants')
-            .update(updateData)
-            .eq('id', restaurantId)
-            .select()
-            .single();
+            const updateData = {
+                name: place.name || restaurant.name,
+                address: place.formatted_address || restaurant.address,
+                rating: place.rating,
+                user_ratings_total: place.user_ratings_total,
+                opening_hours: place.opening_hours?.weekday_text || null,
+                photos: curatedPhotos,
+                cached_reviews: cachedReviews,
+                dietary_tags: mergedTags,
+                price_level: place.price_level,
+                phone_number: place.formatted_phone_number,
+                google_maps_uri: place.url,
+                website: place.website,
+                real_menu: extractRealMenu(place.reviews),
+                local_ratio: localRatio,
+                ai_summary: summary,
+                last_synced_at: new Date().toISOString()
+            };
 
-        if (updateError) {
-            console.error('Update error:', updateError);
-            return NextResponse.json({ error: 'Failed to update restaurant' }, { status: 500 });
-        }
+            const { data: updatedRestaurant, error: updateError } = await supabase
+                .from('restaurants')
+                .update(updateData)
+                .eq('id', restaurantId)
+                .select()
+                .single();
+
+            if(updateError) {
+                console.error('Update error:', updateError);
+                return NextResponse.json({ error: 'Failed to update restaurant' }, { status: 500 });
+            }
 
         return NextResponse.json({
-            synced: true,
-            message: 'Data synchronized successfully',
-            restaurant: updatedRestaurant
-        });
+                synced: true,
+                message: 'Data synchronized successfully',
+                restaurant: updatedRestaurant
+            });
 
-    } catch (error) {
-        console.error('Sync error:', error);
-        return NextResponse.json({ error: 'Sync failed' }, { status: 500 });
+        } catch (error) {
+            console.error('Sync error:', error);
+            return NextResponse.json({ error: 'Sync failed' }, { status: 500 });
+        }
     }
-}

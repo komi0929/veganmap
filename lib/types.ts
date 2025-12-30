@@ -19,7 +19,9 @@ export type Restaurant = {
     rating?: number;
     user_ratings_total?: number;
     dietary_tags?: Record<string, boolean>;
-    real_menu?: any[]; // Allow JSONB
+    real_menu?: { name: string; count: number; sentiment: number }[];
+    local_ratio?: number;
+    ai_summary?: { pros: string[]; cons: string[]; tips: string[] };
 };
 
 export type ReservationStatus = 'pending' | 'confirmed' | 'rejected';

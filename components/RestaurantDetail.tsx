@@ -166,13 +166,68 @@ className = "h-full w-full object-cover shrink-0 snap-center"
                                     <RefreshCw size={12} className="animate-spin" /> {t('syncing')}
                                 </span>
                             )}
+                            {/* Local vs Tourist Badge */}
+                            {displayData.local_ratio !== undefined && (
+                                <>
+                                    {displayData.local_ratio >= 0.8 && (
+                                        <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-amber-500/90 text-white rounded-full backdrop-blur-md shadow-sm font-bold border border-amber-300/50">
+                                            🏅 Local Favorite
+                                        </span>
+                                    )}
+                                    {displayData.local_ratio <= 0.3 && (
+                                        <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-500/90 text-white rounded-full backdrop-blur-md shadow-sm font-bold border border-blue-300/50">
+                                            🌏 Traveler Friendly
+                                        </span>
+                                    )}
+                                </>
+                            )}
                         </div>
                     </div>
                 </div >
 
     {/* Content */ }
     < div className = "p-6 space-y-5 overflow-y-auto" >
-        {/* Address & Phone */ }
+
+        {/* Honest Summary (AI) */ }
+{
+    displayData.ai_summary && (
+        <div className="bg-gradient-to-br from-indigo-50 to-violet-50 p-4 rounded-xl border border-indigo-100 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-2 opacity-10">
+                <MessageSquare size={80} />
+            </div>
+            <h3 className="text-sm font-bold text-indigo-900 mb-3 flex items-center gap-2">
+                <span className="bg-indigo-600 text-white text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wider">AI Summary</span>
+                Honest Review
+            </h3>
+            <div className="space-y-3 relative z-10">
+                {displayData.ai_summary.pros && displayData.ai_summary.pros.length > 0 && (
+                    <div className="flex gap-2">
+                        <span className="shrink-0 text-green-600 bg-green-100 rounded-full w-5 h-5 flex items-center justify-center text-xs mt-0.5">✓</span>
+                        <div>
+                            <p className="text-xs font-bold text-green-800 uppercase mb-0.5">Good</p>
+                            <ul className="text-sm text-stone-700 list-disc list-inside marker:text-green-300">
+                                {displayData.ai_summary.pros.map((p: string, i: number) => <li key={i}>{p}</li>)}
+                            </ul>
+                        </div>
+                    </div>
+                )}
+                {displayData.ai_summary.cons && displayData.ai_summary.cons.length > 0 && (
+                    <div className="flex gap-2">
+                        <span className="shrink-0 text-red-600 bg-red-100 rounded-full w-5 h-5 flex items-center justify-center text-xs mt-0.5">!</span>
+                        <div>
+                            <p className="text-xs font-bold text-red-800 uppercase mb-0.5">Note</p>
+                            <ul className="text-sm text-stone-700 list-disc list-inside marker:text-red-300">
+                                {displayData.ai_summary.cons.map((c: string, i: number) => <li key={i}>{c}</li>)}
+                            </ul>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}
+
+{/* Address & Phone */ }
         < div className = "space-y-3" >
             <div className="flex items-start gap-3">
                 <MapPin className="text-stone-400 mt-1 shrink-0" size={18} />
