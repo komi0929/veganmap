@@ -20,9 +20,9 @@ export interface RestaurantWithSync {
     price_level?: number;
     google_maps_uri?: string;
     website?: string;
+    website?: string;
     real_menu?: { name: string; count: number; sentiment: number }[];
-    local_ratio?: number;
-    ai_summary?: { pros: string[]; cons: string[]; tips: string[] };
+    ai_summary?: { pros: string[] };
 }
 
 export interface DietaryTags {

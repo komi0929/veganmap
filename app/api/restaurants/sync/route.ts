@@ -62,68 +62,35 @@ function containsJapanese(text: string): boolean {
     return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
 }
 
-// Analyze reviews for Local Ratio and Honest Summary
+// Analyze reviews for AI Highlights (Positive Only)
 function analyzeReviews(reviews: any[]) {
-    if (!reviews || reviews.length === 0) return { localRatio: 0, summary: null };
+    if (!reviews || reviews.length === 0) return null;
 
-    let japaneseCount = 0;
     const pros: string[] = [];
-    const cons: string[] = [];
-    const tips: string[] = [];
 
-    // Simple rule-based extraction patterns (can be improved with LLM later)
+    // Simple rule-based extraction patterns - Positive only
     const positivePatterns = [
         /(?:delicious|amazing|great|best|excellent|tasty) ([a-zA-Z\s]+)/i,
-        /([a-zA-Z\s]+) (?:was|is) (?:delicious|amazing|great|best|excellent|tasty)/i
-    ];
-    const negativePatterns = [
-        /(?:bad|slow|expensive|noisy|small|wait) ([a-zA-Z\s]+)/i,
-        /([a-zA-Z\s]+) (?:was|is) (?:bad|slow|expensive|noisy|small|wait)/i,
-        /(?:too) (?:salty|sweet|spicy|expensive|crowded)/i
-    ];
-    const tipPatterns = [
-        /(?:go|visit|try) (?:before|after|at) ([0-9apm\s]+)/i,
-        /(?:reservation|booking) (?:is|was) (?:required|recommended)/i,
-        /(?:ask|order|try) (?:for)? the ([a-zA-Z\s]+)/i
+        /([a-zA-Z\s]+) (?:was|is) (?:delicious|amazing|great|best|excellent|tasty)/i,
+        /(?:loved|enjoyed|recommend) the ([a-zA-Z\s]+)/i
     ];
 
     reviews.forEach(review => {
         const text = review.text || '';
-        if (containsJapanese(text)) {
-            japaneseCount++;
-        }
 
-        // Extract Pros/Cons/Tips (English only for V1 simple regex)
-        // Note: For Japanese analysis we'd need MeCab or similar, skipping for V1 regex
+        // Extract Pros (English only simple regex)
         if (!containsJapanese(text)) {
             positivePatterns.forEach(p => {
                 const match = text.match(p);
-                if (match) pros.push(match[0]); // extraction might be too long, keeping simple
-            });
-            negativePatterns.forEach(p => {
-                const match = text.match(p);
-                if (match) cons.push(match[0]);
-            });
-            tipPatterns.forEach(p => {
-                const match = text.match(p);
-                if (match) tips.push(match[0]);
+                if (match) pros.push(match[1] || match[0]);
             });
         }
     });
 
     // Clean up extracted phrases (dedupe and limit)
-    const uniquePros = Array.from(new Set(pros)).slice(0, 3);
-    const uniqueCons = Array.from(new Set(cons)).slice(0, 3);
-    const uniqueTips = Array.from(new Set(tips)).slice(0, 3);
+    const uniquePros = Array.from(new Set(pros)).slice(0, 5);
 
-    return {
-        localRatio: japaneseCount / reviews.length,
-        summary: (uniquePros.length > 0 || uniqueCons.length > 0) ? {
-            pros: uniquePros,
-            cons: uniqueCons,
-            tips: uniqueTips
-        } : null
-    };
+    return uniquePros.length > 0 ? { pros: uniquePros } : null;
 }
 
 function inferDietaryTags(reviews: any[], name: string): Record<string, boolean> {
@@ -314,9 +281,8 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Update restaurant in database
         // Analyze reviews
-        const { localRatio, summary } = analyzeReviews(place.reviews || []);
+        const aiSummary = analyzeReviews(place.reviews || []);
 
         // Update restaurant in database
         const updateData = {
@@ -333,8 +299,8 @@ export async function POST(request: NextRequest) {
             google_maps_uri: place.url,
             website: place.website,
             real_menu: extractRealMenu(place.reviews),
-            local_ratio: localRatio,
-            ai_summary: summary,
+            // Removed local_ratio as per user request
+            ai_summary: aiSummary, // Only positive highlights
             last_synced_at: new Date().toISOString()
         };
 
