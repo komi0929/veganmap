@@ -1,0 +1,621 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - textbox "Search vegan restaurants..." [ref=e5]
+        - img [ref=e6]
+      - button [ref=e9]:
+        - img [ref=e10]
+      - link [ref=e12] [cursor=pointer]:
+        - /url: /wishlist
+        - img [ref=e13]
+    - generic [ref=e17]:
+      - region "Map" [ref=e18]
+      - generic [ref=e19]:
+        - generic [ref=e81]:
+          - generic:
+            - generic:
+              - button "エヴァダイニング ナチュラルデリ・エヴァ 天神TOIRO店" [ref=e83] [cursor=pointer]
+              - button "グルテンフリー＆100％植物性スイーツ Soy Stories（vegan＆gluten free）" [ref=e84] [cursor=pointer]
+              - button "Viridis" [ref=e85] [cursor=pointer]
+              - button "友安製作所とハンバーガー" [ref=e86] [cursor=pointer]
+              - button "Charis place & retro bar" [ref=e87] [cursor=pointer]
+              - button "エヴァダイニング ビーガンデリ 岩田屋店" [ref=e88] [cursor=pointer]
+              - button "べじさら食堂" [ref=e89] [cursor=pointer]
+              - button "船出屋 (Veggie食堂)" [ref=e90] [cursor=pointer]
+              - button "ちゃぶや咖喱魚 ソラリアステージ店" [ref=e91] [cursor=pointer]
+              - button "Ls plus / salada cafe & bar (エルズプラス) サラダ カフェ & バー" [ref=e92] [cursor=pointer]
+              - button "ロータスパレス（LotusPalace）大名ガーデンシティ店" [ref=e93] [cursor=pointer]
+              - button "カジュアルレストラン Sui" [ref=e94] [cursor=pointer]
+              - button "Salad Resutaurant Mr.&Mrs.Green" [ref=e95] [cursor=pointer]
+              - button "ONO HAKATA ‐Octo Natura Kyusyu‐" [ref=e96] [cursor=pointer]
+              - button "ベジテリア" [ref=e97] [cursor=pointer]
+              - button "おばんざい やや" [ref=e98] [cursor=pointer]
+              - button "and S organic | Fukuoka" [ref=e99] [cursor=pointer]
+              - button "Sonu Sonu" [ref=e100] [cursor=pointer]
+              - button "マハロ 農家レストラン~大人の隠れ家~" [ref=e101] [cursor=pointer]
+              - button "フォーシーズンミラン 大名店" [ref=e102] [cursor=pointer]
+              - button "博多屋台 繋々（つなつな）" [ref=e103] [cursor=pointer]
+              - button "Plant-based cafe NICE" [ref=e104] [cursor=pointer]
+              - button "Organic Café Restaurant Nicolé（ニコレ）" [ref=e105] [cursor=pointer]
+              - button "エヴァダイニング マクロビオティックデリ 博多いっぴん通り店" [ref=e106] [cursor=pointer]
+              - button "ベジパイ" [ref=e107] [cursor=pointer]
+              - button "MUNI COFFEE & BAKE" [ref=e108] [cursor=pointer]
+              - button "マクロビオティック料理教室 エッセンシエル" [ref=e109] [cursor=pointer]
+              - button "かかし 野菜×お酒" [ref=e110] [cursor=pointer]
+              - button "VEGETABLE LIFE CAFE by THE KEGO CLUB" [ref=e111] [cursor=pointer]
+              - button "百宝 bioboo カフェー" [ref=e112] [cursor=pointer]
+              - button "ポラポラ食堂" [ref=e113] [cursor=pointer]
+              - button "はなやさい" [ref=e114] [cursor=pointer]
+              - button "ベトナムビストロ asiatico（アジアティコ）" [ref=e115] [cursor=pointer]
+              - button "BUGORO ALL VEGAN(移転)" [ref=e116] [cursor=pointer]
+              - button "Vegan Ramen YADOKARI" [ref=e117] [cursor=pointer]
+              - button "Rota Cafe Fukuoka" [ref=e118] [cursor=pointer]
+        - iframe [ref=e119]:
+          
+    - generic [ref=e120]:
+      - generic [ref=e121]:
+        - generic [ref=e124]: 🥗
+        - generic [ref=e125]:
+          - generic [ref=e126]:
+            - heading "エヴァダイニング ナチュラルデリ・エヴァ 天神TOIRO店" [level=3] [ref=e127]
+            - button "Add to favorites" [ref=e129]:
+              - img [ref=e130]
+          - generic [ref=e132]:
+            - generic [ref=e133]:
+              - img [ref=e134]
+              - text: "4.5"
+            - generic [ref=e136]:
+              - img [ref=e137]
+              - generic [ref=e140]: 福岡県福岡市中央区天神２丁目１１−3
+          - generic [ref=e142]: "#vegan"
+      - generic [ref=e143]:
+        - generic [ref=e146]: 🥗
+        - generic [ref=e147]:
+          - generic [ref=e148]:
+            - heading "グルテンフリー＆100％植物性スイーツ Soy Stories（vegan＆gluten free）" [level=3] [ref=e149]
+            - button "Add to favorites" [ref=e151]:
+              - img [ref=e152]
+          - generic [ref=e154]:
+            - generic [ref=e155]:
+              - img [ref=e156]
+              - text: "4.6"
+            - generic [ref=e158]:
+              - img [ref=e159]
+              - generic [ref=e162]: 福岡県福岡市中央区薬院２丁目２−２４
+          - generic [ref=e163]:
+            - generic [ref=e164]: "#vegan"
+            - generic [ref=e165]: "#gluten-free"
+      - generic [ref=e166]:
+        - generic [ref=e169]: 🥗
+        - generic [ref=e170]:
+          - generic [ref=e171]:
+            - heading "Viridis" [level=3] [ref=e172]
+            - button "Add to favorites" [ref=e174]:
+              - img [ref=e175]
+          - generic [ref=e177]:
+            - generic [ref=e178]:
+              - img [ref=e179]
+              - text: "4.5"
+            - generic [ref=e181]:
+              - img [ref=e182]
+              - generic [ref=e185]: 福岡県福岡市中央区大名２丁目６−５０
+          - generic [ref=e187]: "#vegan"
+      - generic [ref=e188]:
+        - generic [ref=e191]: 🥗
+        - generic [ref=e192]:
+          - generic [ref=e193]:
+            - heading "友安製作所とハンバーガー" [level=3] [ref=e194]
+            - button "Add to favorites" [ref=e196]:
+              - img [ref=e197]
+          - generic [ref=e199]:
+            - generic [ref=e200]:
+              - img [ref=e201]
+              - text: "4.5"
+            - generic [ref=e203]:
+              - img [ref=e204]
+              - generic [ref=e207]: 福岡県福岡市博多区冷泉町８−１７
+          - generic [ref=e209]: "#vegan"
+      - generic [ref=e210]:
+        - generic [ref=e213]: 🥗
+        - generic [ref=e214]:
+          - generic [ref=e215]:
+            - heading "Charis place & retro bar" [level=3] [ref=e216]
+            - button "Add to favorites" [ref=e218]:
+              - img [ref=e219]
+          - generic [ref=e221]:
+            - generic [ref=e222]:
+              - img [ref=e223]
+              - text: "4.7"
+            - generic [ref=e225]:
+              - img [ref=e226]
+              - generic [ref=e229]: １F,
+          - generic [ref=e230]:
+            - generic [ref=e231]: "#vegan"
+            - generic [ref=e232]: "#cafe"
+      - generic [ref=e233]:
+        - generic [ref=e236]: 🥗
+        - generic [ref=e237]:
+          - generic [ref=e238]:
+            - heading "エヴァダイニング ビーガンデリ 岩田屋店" [level=3] [ref=e239]
+            - button "Add to favorites" [ref=e241]:
+              - img [ref=e242]
+          - generic [ref=e244]:
+            - generic [ref=e245]:
+              - img [ref=e246]
+              - text: "4"
+            - generic [ref=e248]:
+              - img [ref=e249]
+              - generic [ref=e252]: 地下
+          - generic [ref=e254]: "#vegan"
+      - generic [ref=e255]:
+        - generic [ref=e258]: 🥗
+        - generic [ref=e259]:
+          - generic [ref=e260]:
+            - heading "べじさら食堂" [level=3] [ref=e261]
+            - button "Add to favorites" [ref=e263]:
+              - img [ref=e264]
+          - generic [ref=e266]:
+            - generic [ref=e267]:
+              - img [ref=e268]
+              - text: "4.5"
+            - generic [ref=e270]:
+              - img [ref=e271]
+              - generic [ref=e274]: 福岡県福岡市中央区赤坂３丁目１−２
+          - generic [ref=e276]: "#vegan"
+      - generic [ref=e277]:
+        - generic [ref=e280]: 🥗
+        - generic [ref=e281]:
+          - generic [ref=e282]:
+            - heading "船出屋 (Veggie食堂)" [level=3] [ref=e283]
+            - button "Add to favorites" [ref=e285]:
+              - img [ref=e286]
+          - generic [ref=e288]:
+            - generic [ref=e289]:
+              - img [ref=e290]
+              - text: "4.4"
+            - generic [ref=e292]:
+              - img [ref=e293]
+              - generic [ref=e296]: 福岡県古賀市日吉３丁目１７−１２
+          - generic [ref=e298]: "#vegan"
+      - generic [ref=e299]:
+        - generic [ref=e302]: 🥗
+        - generic [ref=e303]:
+          - generic [ref=e304]:
+            - heading "ちゃぶや咖喱魚 ソラリアステージ店" [level=3] [ref=e305]
+            - button "Add to favorites" [ref=e307]:
+              - img [ref=e308]
+          - generic [ref=e310]:
+            - generic [ref=e311]:
+              - img [ref=e312]
+              - text: "4.5"
+            - generic [ref=e314]:
+              - img [ref=e315]
+              - generic [ref=e318]: 福岡県福岡市中央区天神２丁目１１−３
+          - generic [ref=e320]: "#vegan"
+      - generic [ref=e321]:
+        - generic [ref=e324]: 🥗
+        - generic [ref=e325]:
+          - generic [ref=e326]:
+            - heading "Ls plus / salada cafe & bar (エルズプラス) サラダ カフェ & バー" [level=3] [ref=e327]
+            - button "Add to favorites" [ref=e329]:
+              - img [ref=e330]
+          - generic [ref=e332]:
+            - generic [ref=e333]:
+              - img [ref=e334]
+              - text: "4.9"
+            - generic [ref=e336]:
+              - img [ref=e337]
+              - generic [ref=e340]: 福岡県福岡市中央区警固２丁目１−１５
+          - generic [ref=e341]:
+            - generic [ref=e342]: "#vegan"
+            - generic [ref=e343]: "#cafe"
+      - generic [ref=e344]:
+        - generic [ref=e347]: 🥗
+        - generic [ref=e348]:
+          - generic [ref=e349]:
+            - heading "ロータスパレス（LotusPalace）大名ガーデンシティ店" [level=3] [ref=e350]
+            - button "Add to favorites" [ref=e352]:
+              - img [ref=e353]
+          - generic [ref=e355]:
+            - generic [ref=e356]:
+              - img [ref=e357]
+              - text: "4.4"
+            - generic [ref=e359]:
+              - img [ref=e360]
+              - generic [ref=e363]: 福岡県福岡市中央区大名２丁目６−５０
+          - generic [ref=e365]: "#vegan"
+      - generic [ref=e366]:
+        - generic [ref=e369]: 🥗
+        - generic [ref=e370]:
+          - generic [ref=e371]:
+            - heading "カジュアルレストラン Sui" [level=3] [ref=e372]
+            - button "Add to favorites" [ref=e374]:
+              - img [ref=e375]
+          - generic [ref=e377]:
+            - generic [ref=e378]:
+              - img [ref=e379]
+              - text: "3.8"
+            - generic [ref=e381]:
+              - img [ref=e382]
+              - generic [ref=e385]: 福岡県糟屋郡久山町久原１８２２
+          - generic [ref=e387]: "#vegan"
+      - generic [ref=e388]:
+        - generic [ref=e391]: 🥗
+        - generic [ref=e392]:
+          - generic [ref=e393]:
+            - heading "Salad Resutaurant Mr.&Mrs.Green" [level=3] [ref=e394]
+            - button "Add to favorites" [ref=e396]:
+              - img [ref=e397]
+          - generic [ref=e399]:
+            - generic [ref=e400]:
+              - img [ref=e401]
+              - text: "3.7"
+            - generic [ref=e403]:
+              - img [ref=e404]
+              - generic [ref=e407]: 福岡県福岡市中央区天神２丁目２−４３
+          - generic [ref=e408]:
+            - generic [ref=e409]: "#vegan"
+            - generic [ref=e410]: "#cafe"
+      - generic [ref=e411]:
+        - generic [ref=e414]: 🥗
+        - generic [ref=e415]:
+          - generic [ref=e416]:
+            - heading "ONO HAKATA ‐Octo Natura Kyusyu‐" [level=3] [ref=e417]
+            - button "Add to favorites" [ref=e419]:
+              - img [ref=e420]
+          - generic [ref=e422]:
+            - generic [ref=e423]:
+              - img [ref=e424]
+              - text: "4.4"
+            - generic [ref=e426]:
+              - img [ref=e427]
+              - generic [ref=e430]: 福岡県福岡市博多区中洲５丁目６−２０
+          - generic [ref=e431]:
+            - generic [ref=e432]: "#vegan"
+            - generic [ref=e433]: "#cafe"
+      - generic [ref=e434]:
+        - generic [ref=e437]: 🥗
+        - generic [ref=e438]:
+          - generic [ref=e439]:
+            - heading "ベジテリア" [level=3] [ref=e440]
+            - button "Add to favorites" [ref=e442]:
+              - img [ref=e443]
+          - generic [ref=e445]:
+            - generic [ref=e446]:
+              - img [ref=e447]
+              - text: "4.4"
+            - generic [ref=e449]:
+              - img [ref=e450]
+              - generic [ref=e453]: 福岡県福岡市中央区天神２丁目１−１
+          - generic [ref=e455]: "#vegan"
+      - generic [ref=e456]:
+        - generic [ref=e459]: 🥗
+        - generic [ref=e460]:
+          - generic [ref=e461]:
+            - heading "おばんざい やや" [level=3] [ref=e462]
+            - button "Add to favorites" [ref=e464]:
+              - img [ref=e465]
+          - generic [ref=e467]:
+            - generic [ref=e468]:
+              - img [ref=e469]
+              - text: "4.9"
+            - generic [ref=e471]:
+              - img [ref=e472]
+              - generic [ref=e475]: 福岡県福岡市博多区中洲２丁目１−１０
+          - generic [ref=e477]: "#vegetarian"
+      - generic [ref=e478]:
+        - img "and S organic | Fukuoka" [ref=e480]
+        - generic [ref=e481]:
+          - generic [ref=e482]:
+            - heading "and S organic | Fukuoka" [level=3] [ref=e483]
+            - button "Add to favorites" [ref=e485]:
+              - img [ref=e486]
+          - generic [ref=e488]:
+            - generic [ref=e489]:
+              - img [ref=e490]
+              - text: "4.5"
+            - generic [ref=e492]:
+              - img [ref=e493]
+              - generic [ref=e496]: 福岡県福岡市中央区薬院３丁目３−５
+          - generic [ref=e497]:
+            - generic [ref=e498]: "#vegan"
+            - generic [ref=e499]: "#organic"
+      - generic [ref=e500]:
+        - img "Sonu Sonu" [ref=e502]
+        - generic [ref=e503]:
+          - generic [ref=e504]:
+            - heading "Sonu Sonu" [level=3] [ref=e505]
+            - button "Add to favorites" [ref=e507]:
+              - img [ref=e508]
+          - generic [ref=e510]:
+            - generic [ref=e511]:
+              - img [ref=e512]
+              - text: "4.2"
+            - generic [ref=e514]:
+              - img [ref=e515]
+              - generic [ref=e518]: 福岡県福岡市中央区天神３丁目６−２９
+          - generic [ref=e520]: "#vegan"
+      - generic [ref=e521]:
+        - generic [ref=e524]: 🥗
+        - generic [ref=e525]:
+          - generic [ref=e526]:
+            - heading "マハロ 農家レストラン~大人の隠れ家~" [level=3] [ref=e527]
+            - button "Add to favorites" [ref=e529]:
+              - img [ref=e530]
+          - generic [ref=e532]:
+            - generic [ref=e533]:
+              - img [ref=e534]
+              - text: "4.4"
+            - generic [ref=e536]:
+              - img [ref=e537]
+              - generic [ref=e540]: 福岡県福岡市中央区大名２丁目２−５２
+          - generic [ref=e541]:
+            - generic [ref=e542]: "#vegetarian"
+            - generic [ref=e543]: "#cafe"
+      - generic [ref=e544]:
+        - generic [ref=e547]: 🥗
+        - generic [ref=e548]:
+          - generic [ref=e549]:
+            - heading "フォーシーズンミラン 大名店" [level=3] [ref=e550]
+            - button "Add to favorites" [ref=e552]:
+              - img [ref=e553]
+          - generic [ref=e555]:
+            - generic [ref=e556]:
+              - img [ref=e557]
+              - text: "4.7"
+            - generic [ref=e559]:
+              - img [ref=e560]
+              - generic [ref=e563]: 福岡県福岡市中央区大名２丁目９−２０
+          - generic [ref=e565]: "#vegetarian"
+      - generic [ref=e566]:
+        - generic [ref=e569]: 🥗
+        - generic [ref=e570]:
+          - generic [ref=e571]:
+            - heading "博多屋台 繋々（つなつな）" [level=3] [ref=e572]
+            - button "Add to favorites" [ref=e574]:
+              - img [ref=e575]
+          - generic [ref=e577]:
+            - generic [ref=e578]:
+              - img [ref=e579]
+              - text: "4.9"
+            - generic [ref=e581]:
+              - img [ref=e582]
+              - generic [ref=e585]: 福岡県福岡市博多区中洲中島町１−１
+          - generic [ref=e587]: "#vegetarian"
+      - generic [ref=e588]:
+        - generic [ref=e591]: 🥗
+        - generic [ref=e592]:
+          - generic [ref=e593]:
+            - heading "Plant-based cafe NICE" [level=3] [ref=e594]
+            - button "Add to favorites" [ref=e596]:
+              - img [ref=e597]
+          - generic [ref=e599]:
+            - generic [ref=e600]:
+              - img [ref=e601]
+              - text: "4.8"
+            - generic [ref=e603]:
+              - img [ref=e604]
+              - generic [ref=e607]: 福岡県福岡市中央区警固３丁目１３−３５
+          - generic [ref=e609]: "#cafe"
+      - generic [ref=e610]:
+        - generic [ref=e613]: 🥗
+        - generic [ref=e614]:
+          - generic [ref=e615]:
+            - heading "Organic Café Restaurant Nicolé（ニコレ）" [level=3] [ref=e616]
+            - button "Add to favorites" [ref=e618]:
+              - img [ref=e619]
+          - generic [ref=e621]:
+            - generic [ref=e622]:
+              - img [ref=e623]
+              - text: "4.7"
+            - generic [ref=e625]:
+              - img [ref=e626]
+              - generic [ref=e629]: 福岡県福岡市中央区赤坂２丁目４−３
+          - generic [ref=e631]: "#organic"
+      - generic [ref=e632]:
+        - generic [ref=e635]: 🥗
+        - generic [ref=e636]:
+          - generic [ref=e637]:
+            - heading "エヴァダイニング マクロビオティックデリ 博多いっぴん通り店" [level=3] [ref=e638]
+            - button "Add to favorites" [ref=e640]:
+              - img [ref=e641]
+          - generic [ref=e643]:
+            - generic [ref=e644]:
+              - img [ref=e645]
+              - text: "4.4"
+            - generic [ref=e647]:
+              - img [ref=e648]
+              - generic [ref=e651]: 福岡県福岡市博多区博多駅中央街１−１
+          - generic [ref=e653]: "#vegetarian"
+      - generic [ref=e654]:
+        - generic [ref=e657]: 🥗
+        - generic [ref=e658]:
+          - generic [ref=e659]:
+            - heading "ベジパイ" [level=3] [ref=e660]
+            - button "Add to favorites" [ref=e662]:
+              - img [ref=e663]
+          - generic [ref=e665]:
+            - generic [ref=e666]:
+              - img [ref=e667]
+              - text: "4"
+            - generic [ref=e669]:
+              - img [ref=e670]
+              - generic [ref=e673]: 福岡県福岡市中央区今泉１丁目１−４
+          - generic [ref=e675]: "#cafe"
+      - generic [ref=e676]:
+        - generic [ref=e679]: 🥗
+        - generic [ref=e680]:
+          - generic [ref=e681]:
+            - heading "MUNI COFFEE & BAKE" [level=3] [ref=e682]
+            - button "Add to favorites" [ref=e684]:
+              - img [ref=e685]
+          - generic [ref=e687]:
+            - generic [ref=e688]:
+              - img [ref=e689]
+              - text: "4.9"
+            - generic [ref=e691]:
+              - img [ref=e692]
+              - generic [ref=e695]: 福岡県福岡市中央区平尾２丁目７−２
+          - generic [ref=e697]: "#cafe"
+      - generic [ref=e698]:
+        - generic [ref=e701]: 🥗
+        - generic [ref=e702]:
+          - generic [ref=e703]:
+            - heading "マクロビオティック料理教室 エッセンシエル" [level=3] [ref=e704]
+            - button "Add to favorites" [ref=e706]:
+              - img [ref=e707]
+          - generic [ref=e709]:
+            - generic [ref=e710]:
+              - img [ref=e711]
+              - text: "4.7"
+            - generic [ref=e713]:
+              - img [ref=e714]
+              - generic [ref=e717]: 福岡県福岡市南区高宮１丁目３−３２
+          - generic [ref=e719]: "#vegetarian"
+      - generic [ref=e720]:
+        - generic [ref=e723]: 🥗
+        - generic [ref=e724]:
+          - generic [ref=e725]:
+            - heading "かかし 野菜×お酒" [level=3] [ref=e726]
+            - button "Add to favorites" [ref=e728]:
+              - img [ref=e729]
+          - generic [ref=e731]:
+            - generic [ref=e732]:
+              - img [ref=e733]
+              - text: "4.5"
+            - generic [ref=e735]:
+              - img [ref=e736]
+              - generic [ref=e739]: 福岡県福岡市博多区祇園町６−２７
+          - generic [ref=e741]: "#vegetarian"
+      - generic [ref=e742]:
+        - generic [ref=e745]: 🥗
+        - generic [ref=e746]:
+          - generic [ref=e747]:
+            - heading "VEGETABLE LIFE CAFE by THE KEGO CLUB" [level=3] [ref=e748]
+            - button "Add to favorites" [ref=e750]:
+              - img [ref=e751]
+          - generic [ref=e753]:
+            - generic [ref=e754]:
+              - img [ref=e755]
+              - text: "3.8"
+            - generic [ref=e757]:
+              - img [ref=e758]
+              - generic [ref=e761]: 福岡県福岡市中央区大名１丁目１２−５
+          - generic [ref=e763]: "#cafe"
+      - generic [ref=e764]:
+        - generic [ref=e767]: 🥗
+        - generic [ref=e768]:
+          - generic [ref=e769]:
+            - heading "百宝 bioboo カフェー" [level=3] [ref=e770]
+            - button "Add to favorites" [ref=e772]:
+              - img [ref=e773]
+          - generic [ref=e775]:
+            - generic [ref=e776]:
+              - img [ref=e777]
+              - text: "4.8"
+            - generic [ref=e779]:
+              - img [ref=e780]
+              - generic [ref=e783]: 福岡県福岡市博多区美野島１丁目３−１１
+          - generic [ref=e785]: "#cafe"
+      - generic [ref=e786]:
+        - generic [ref=e789]: 🥗
+        - generic [ref=e790]:
+          - generic [ref=e791]:
+            - heading "ポラポラ食堂" [level=3] [ref=e792]
+            - button "Add to favorites" [ref=e794]:
+              - img [ref=e795]
+          - generic [ref=e797]:
+            - generic [ref=e798]:
+              - img [ref=e799]
+              - text: "4.4"
+            - generic [ref=e801]:
+              - img [ref=e802]
+              - generic [ref=e805]: 福岡県福岡市中央区赤坂１丁目９−１
+          - generic [ref=e807]: "#vegetarian"
+      - generic [ref=e808]:
+        - generic [ref=e811]: 🥗
+        - generic [ref=e812]:
+          - generic [ref=e813]:
+            - heading "はなやさい" [level=3] [ref=e814]
+            - button "Add to favorites" [ref=e816]:
+              - img [ref=e817]
+          - generic [ref=e819]:
+            - generic [ref=e820]:
+              - img [ref=e821]
+              - text: "4.7"
+            - generic [ref=e823]:
+              - img [ref=e824]
+              - generic [ref=e827]: 福岡県福岡市中央区桜坂１丁目４−１７
+          - generic [ref=e829]: "#cafe"
+      - generic [ref=e830]:
+        - generic [ref=e833]: 🥗
+        - generic [ref=e834]:
+          - generic [ref=e835]:
+            - heading "ベトナムビストロ asiatico（アジアティコ）" [level=3] [ref=e836]
+            - button "Add to favorites" [ref=e838]:
+              - img [ref=e839]
+          - generic [ref=e841]:
+            - generic [ref=e842]:
+              - img [ref=e843]
+              - text: "4.4"
+            - generic [ref=e845]:
+              - img [ref=e846]
+              - generic [ref=e849]: 福岡県福岡市中央区大名１丁目２−３１
+          - generic [ref=e851]: "#vegetarian"
+      - generic [ref=e852]:
+        - img "BUGORO ALL VEGAN(移転)" [ref=e854]
+        - generic [ref=e855]:
+          - generic [ref=e856]:
+            - heading "BUGORO ALL VEGAN(移転)" [level=3] [ref=e857]
+            - button "Add to favorites" [ref=e859]:
+              - img [ref=e860]
+          - generic [ref=e862]:
+            - generic [ref=e863]:
+              - img [ref=e864]
+              - text: "4.9"
+            - generic [ref=e866]:
+              - img [ref=e867]
+              - generic [ref=e870]: 福岡県福岡市博多区住吉４丁目２７−１５
+          - generic [ref=e872]: "#vegan"
+      - generic [ref=e873]:
+        - img "Vegan Ramen YADOKARI" [ref=e875]
+        - generic [ref=e876]:
+          - generic [ref=e877]:
+            - heading "Vegan Ramen YADOKARI" [level=3] [ref=e878]
+            - button "Add to favorites" [ref=e880]:
+              - img [ref=e881]
+          - generic [ref=e883]:
+            - generic [ref=e884]:
+              - img [ref=e885]
+              - text: "5"
+            - generic [ref=e887]:
+              - img [ref=e888]
+              - generic [ref=e891]: 福岡県福岡市中央区平尾３丁目２２−３
+          - generic [ref=e893]: "#vegan"
+      - generic [ref=e894]:
+        - img "Rota Cafe Fukuoka" [ref=e896]
+        - generic [ref=e897]:
+          - generic [ref=e898]:
+            - heading "Rota Cafe Fukuoka" [level=3] [ref=e899]
+            - button "Add to favorites" [ref=e901]:
+              - img [ref=e902]
+          - generic [ref=e904]:
+            - generic [ref=e905]:
+              - img [ref=e906]
+              - text: "4.5"
+            - generic [ref=e908]: ¥¥
+            - generic [ref=e909]:
+              - img [ref=e910]
+              - generic [ref=e913]: 福岡県福岡市中央区平尾１丁目３−２５
+          - generic [ref=e914]:
+            - generic [ref=e915]: "#vegan"
+            - generic [ref=e916]: "#cafe"
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e922] [cursor=pointer]:
+    - img [ref=e923]
+  - alert [ref=e926]
+```

@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { AuthProvider } from '@/lib/AuthContext';
 import { GoogleAnalytics } from '@/lib/analytics';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -51,6 +52,7 @@ export default async function LocaleLayout({
                 <NextIntlClientProvider messages={messages}>
                     <AuthProvider>
                         {children}
+                        <Toaster position="top-center" richColors />
                     </AuthProvider>
                 </NextIntlClientProvider>
             </body>

@@ -45,6 +45,26 @@ interface PlaceResult {
     types?: string[];
 }
 
+interface SeedRestaurant {
+    name: string;
+    google_place_id: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    rating: number | null;
+    user_ratings_total: number | null;
+    tags: string[];
+    is_verified: boolean;
+    dietary_tags: {
+        oriental_vegan: boolean;
+        alcohol_free: boolean;
+        nut_free: boolean;
+        soy_free: boolean;
+        halal: boolean;
+        kosher: boolean;
+    };
+}
+
 async function searchPlaces(query: string, lat: number, lng: number): Promise<PlaceResult[]> {
     const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
     url.searchParams.set('query', query);
@@ -93,7 +113,7 @@ function inferTags(place: PlaceResult, query: string): string[] {
     return [...new Set(tags)];
 }
 
-async function insertToSupabase(restaurants: any[]) {
+async function insertToSupabase(restaurants: SeedRestaurant[]) {
     const { createClient } = await import('@supabase/supabase-js');
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_KEY!);
 
@@ -136,7 +156,7 @@ async function main() {
         process.exit(1);
     }
 
-    const allRestaurants: any[] = [];
+    const allRestaurants: SeedRestaurant[] = [];
     const seenPlaceIds = new Set<string>();
 
     for (const location of SEARCH_LOCATIONS) {

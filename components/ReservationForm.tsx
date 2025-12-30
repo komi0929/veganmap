@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { X, Send, Loader2, CheckCircle } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { supabase } from '@/lib/supabaseClient';
-import { Restaurant, Reservation } from '@/lib/types';
+import { Restaurant, Reservation, ReservationInsert } from '@/lib/types';
+import { toast } from 'sonner';
 
 interface ReservationFormProps {
     restaurant: Restaurant;
@@ -27,19 +28,17 @@ export default function ReservationForm({ restaurant, onClose }: ReservationForm
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        setError(null);
 
-        const reservation: Reservation = {
+        const reservation: ReservationInsert = {
             restaurant_id: restaurant.id,
             user_email: formData.email,
             user_name: formData.name,
             user_lang: locale,
-            dietary_request: {
+            dietary_requirements: {
                 vegan: formData.vegan,
                 vegetarian: formData.vegetarian,
                 gluten_free: formData.glutenFree,
@@ -56,7 +55,7 @@ export default function ReservationForm({ restaurant, onClose }: ReservationForm
 
         if (submitError) {
             console.error('Reservation error:', submitError);
-            setError(t('errorMessage'));
+            toast.error(t('errorMessage'));
         } else {
             setIsSuccess(true);
         }
@@ -195,12 +194,7 @@ export default function ReservationForm({ restaurant, onClose }: ReservationForm
                         />
                     </div>
 
-                    {/* Error Message */}
-                    {error && (
-                        <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
-                            {error}
-                        </div>
-                    )}
+
 
                     {/* Submit Button */}
                     <button

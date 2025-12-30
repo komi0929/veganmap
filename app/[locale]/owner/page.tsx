@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
-import { Restaurant } from '@/lib/types';
+import { Restaurant, Reservation } from '@/lib/types';
 import AuthForm from '@/components/AuthForm';
 import {
     Check,
@@ -20,24 +20,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
-interface Reservation {
-    id: string;
-    restaurant_id: string;
-    user_email: string;
-    user_name: string;
-    user_lang: string;
-    dietary_request: {
-        vegan?: boolean;
-        vegetarian?: boolean;
-        gluten_free?: boolean;
-        allergies?: string;
-        other?: string;
-    };
-    status: 'pending' | 'confirmed' | 'rejected';
-    owner_note: string | null;
-    created_at: string;
-    restaurant?: Restaurant;
-}
+
 
 export default function OwnerDashboard() {
     const t = useTranslations('Owner');
@@ -49,20 +32,9 @@ export default function OwnerDashboard() {
     const [isLoading, setIsLoading] = useState(true);
     const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-    // Show auth form if not logged in
-    if (authLoading) {
-        return (
-            <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-                <Loader2 size={32} className="animate-spin text-green-600" />
-            </div>
-        );
-    }
-
-    if (!user) {
-        return <AuthForm onSignIn={signIn} onSignUp={signUp} />;
-    }
-
     const fetchData = useCallback(async () => {
+        if (!user) return; // Guard against no user
+
         setIsLoading(true);
 
         // Fetch restaurants
@@ -81,20 +53,40 @@ export default function OwnerDashboard() {
             .order('created_at', { ascending: false });
 
         if (reservationData) {
-            // Attach restaurant info to each reservation
+            // Attach restaurant info to each reservation and map dietary_requirements
             const enrichedReservations = reservationData.map(r => ({
                 ...r,
-                restaurant: restaurantData?.find(rest => rest.id === r.restaurant_id)
+                restaurant: restaurantData?.find(rest => rest.id === r.restaurant_id),
+                dietary_request: (r.dietary_requirements as unknown as { vegan: boolean; vegetarian: boolean; gluten_free: boolean; allergies?: string; other?: string }) || {
+                    vegan: false,
+                    vegetarian: false,
+                    gluten_free: false
+                }
             }));
-            setReservations(enrichedReservations as Reservation[]);
+            setReservations(enrichedReservations as unknown as Reservation[]);
         }
 
         setIsLoading(false);
-    }, []);
+    }, [user]);
 
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+        if (user) {
+            fetchData();
+        }
+    }, [fetchData, user]);
+
+    // Show auth form if not logged in
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+                <Loader2 size={32} className="animate-spin text-green-600" />
+            </div>
+        );
+    }
+
+    if (!user) {
+        return <AuthForm onSignIn={signIn} onSignUp={signUp} />;
+    }
 
     const updateStatus = async (id: string, status: 'confirmed' | 'rejected', note?: string) => {
         setUpdatingId(id);
