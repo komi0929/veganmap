@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Phone, MapPin, X, Globe, Copy, Check, Instagram, Facebook, Star, Clock, Utensils } from 'lucide-react';
+import { Phone, MapPin, X, Globe, Copy, Check, Instagram, Facebook, Star, Clock, Utensils, ExternalLink, RefreshCw, MessageSquare, Calendar } from 'lucide-react';
 import { Restaurant } from '@/lib/types';
 import { useTranslations, useLocale } from 'next-intl';
 import ReservationForm from './ReservationForm';
