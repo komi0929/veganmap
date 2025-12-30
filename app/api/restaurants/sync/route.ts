@@ -315,6 +315,10 @@ export async function POST(request: NextRequest) {
         }
 
         // Update restaurant in database
+        // Analyze reviews
+        const { localRatio, summary } = analyzeReviews(place.reviews || []);
+
+        // Update restaurant in database
         const updateData = {
             name: place.name || restaurant.name,
             address: place.formatted_address || restaurant.address,
@@ -325,48 +329,35 @@ export async function POST(request: NextRequest) {
             cached_reviews: cachedReviews,
             dietary_tags: mergedTags,
             price_level: place.price_level,
-            // Analyze reviews
-            const { localRatio, summary } = analyzeReviews(place.reviews || []);
+            phone_number: place.formatted_phone_number,
+            google_maps_uri: place.url,
+            website: place.website,
+            real_menu: extractRealMenu(place.reviews),
+            local_ratio: localRatio,
+            ai_summary: summary,
+            last_synced_at: new Date().toISOString()
+        };
 
-            const updateData = {
-                name: place.name || restaurant.name,
-                address: place.formatted_address || restaurant.address,
-                rating: place.rating,
-                user_ratings_total: place.user_ratings_total,
-                opening_hours: place.opening_hours?.weekday_text || null,
-                photos: curatedPhotos,
-                cached_reviews: cachedReviews,
-                dietary_tags: mergedTags,
-                price_level: place.price_level,
-                phone_number: place.formatted_phone_number,
-                google_maps_uri: place.url,
-                website: place.website,
-                real_menu: extractRealMenu(place.reviews),
-                local_ratio: localRatio,
-                ai_summary: summary,
-                last_synced_at: new Date().toISOString()
-            };
+        const { data: updatedRestaurant, error: updateError } = await supabase
+            .from('restaurants')
+            .update(updateData)
+            .eq('id', restaurantId)
+            .select()
+            .single();
 
-            const { data: updatedRestaurant, error: updateError } = await supabase
-                .from('restaurants')
-                .update(updateData)
-                .eq('id', restaurantId)
-                .select()
-                .single();
-
-            if(updateError) {
-                console.error('Update error:', updateError);
-                return NextResponse.json({ error: 'Failed to update restaurant' }, { status: 500 });
-            }
+        if (updateError) {
+            console.error('Update error:', updateError);
+            return NextResponse.json({ error: 'Failed to update restaurant' }, { status: 500 });
+        }
 
         return NextResponse.json({
-                synced: true,
-                message: 'Data synchronized successfully',
-                restaurant: updatedRestaurant
-            });
+            synced: true,
+            message: 'Data synchronized successfully',
+            restaurant: updatedRestaurant
+        });
 
-        } catch (error) {
-            console.error('Sync error:', error);
-            return NextResponse.json({ error: 'Sync failed' }, { status: 500 });
-        }
+    } catch (error) {
+        console.error('Sync error:', error);
+        return NextResponse.json({ error: 'Sync failed' }, { status: 500 });
     }
+}
