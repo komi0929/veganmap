@@ -93,7 +93,7 @@ export default function OwnerDashboard() {
 
         const { error } = await supabase
             .from('reservations')
-            .update({ status, owner_note: note || null })
+            .update({ status, owner_note: note || null } as any)
             .eq('id', id);
 
         if (!error) {
