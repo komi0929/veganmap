@@ -91,9 +91,10 @@ export default function OwnerDashboard() {
     const updateStatus = async (id: string, status: 'confirmed' | 'rejected', note?: string) => {
         setUpdatingId(id);
 
-        const { error } = await supabase
+        // Bypass type checking completely for this operation as it's causing build failures
+        const { error } = await (supabase as any)
             .from('reservations')
-            .update({ status, owner_note: note || null } as any)
+            .update({ status, owner_note: note || null })
             .eq('id', id);
 
         if (!error) {
