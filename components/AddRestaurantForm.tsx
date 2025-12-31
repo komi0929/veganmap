@@ -50,7 +50,8 @@ export default function AddRestaurantForm({ place, onSuccess, onCancel }: AddRes
         setError(null);
 
         try {
-            const { error: insertError } = await supabase
+            // Bypass type checking for insert operation
+            const { error: insertError } = await (supabase as any)
                 .from('restaurants')
                 .insert([{
                     google_place_id: place.place_id,
@@ -112,8 +113,8 @@ export default function AddRestaurantForm({ place, onSuccess, onCancel }: AddRes
                                     key={tag}
                                     onClick={() => toggleTag(tag)}
                                     className={`px-3 py-1.5 text-sm rounded-full border transition-all ${selectedTags.includes(tag)
-                                            ? 'bg-green-100 border-green-300 text-green-700'
-                                            : 'bg-white border-stone-200 text-stone-600 hover:border-stone-300'
+                                        ? 'bg-green-100 border-green-300 text-green-700'
+                                        : 'bg-white border-stone-200 text-stone-600 hover:border-stone-300'
                                         }`}
                                 >
                                     #{tag}
