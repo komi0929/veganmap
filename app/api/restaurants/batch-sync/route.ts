@@ -6,6 +6,7 @@ const GOOGLE_PLACES_API_URL = 'https://maps.googleapis.com/maps/api/place';
 export async function POST(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const secret = searchParams.get('secret');
+    const forceAll = searchParams.get('forceAll') === 'true';
 
     if (secret !== process.env.SEED_SECRET && secret !== 'dev-seed-2024') {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -21,28 +22,47 @@ export async function POST(request: NextRequest) {
         process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    // Get all restaurants without photos
-    const { data: restaurants, error: fetchError } = await supabase
+    // Get ALL restaurants and filter in code (more reliable than complex OR query)
+    const { data: allRestaurants, error: fetchError } = await supabase
         .from('restaurants')
         .select('id, google_place_id, name, photos')
-        .or('photos.is.null,photos.eq.{}');
+        .order('name');
 
-    if (fetchError || !restaurants) {
+    if (fetchError || !allRestaurants) {
         return NextResponse.json({ error: 'Failed to fetch restaurants', details: fetchError }, { status: 500 });
     }
 
-    console.log(`Found ${restaurants.length} restaurants without photos`);
+    // Filter restaurants without photos (null, undefined, empty array, or not an array)
+    const restaurants = forceAll
+        ? allRestaurants
+        : allRestaurants.filter(r => {
+            if (!r.photos) return true;
+            if (!Array.isArray(r.photos)) return true;
+            if (r.photos.length === 0) return true;
+            return false;
+        });
+
+    console.log(`Found ${restaurants.length} restaurants to sync (out of ${allRestaurants.length} total)`);
 
     const results = {
-        total: restaurants.length,
+        totalInDb: allRestaurants.length,
+        needsSync: restaurants.length,
         synced: 0,
-        failed: 0,
-        errors: [] as string[]
+        noPhotosFromGoogle: 0,
+        apiErrors: 0,
+        updateErrors: 0,
+        details: [] as { name: string; status: string; photoCount?: number }[]
     };
 
-    // Process each restaurant (with rate limiting)
-    for (const restaurant of restaurants.slice(0, 50)) { // Limit to 50 per batch
+    // Process each restaurant
+    for (const restaurant of restaurants) {
         try {
+            if (!restaurant.google_place_id) {
+                results.details.push({ name: restaurant.name, status: 'No Place ID' });
+                results.apiErrors++;
+                continue;
+            }
+
             // Fetch place details
             const params = new URLSearchParams({
                 place_id: restaurant.google_place_id,
@@ -55,18 +75,17 @@ export async function POST(request: NextRequest) {
             const data = await response.json();
 
             if (data.status !== 'OK') {
-                console.error(`Failed for ${restaurant.name}:`, data.status);
-                results.failed++;
-                results.errors.push(`${restaurant.name}: ${data.status}`);
+                results.details.push({ name: restaurant.name, status: `API: ${data.status}` });
+                results.apiErrors++;
                 continue;
             }
 
             const place = data.result;
-            const photos = (place.photos || []).slice(0, 5).map((p: any) => p.photo_reference);
+            const photos = (place.photos || []).slice(0, 8).map((p: any) => p.photo_reference);
 
             if (photos.length === 0) {
-                console.log(`No photos for ${restaurant.name}`);
-                results.failed++;
+                results.details.push({ name: restaurant.name, status: 'No photos in Google' });
+                results.noPhotosFromGoogle++;
                 continue;
             }
 
@@ -86,27 +105,25 @@ export async function POST(request: NextRequest) {
                 .eq('id', restaurant.id);
 
             if (updateError) {
-                console.error(`Update failed for ${restaurant.name}:`, updateError);
-                results.failed++;
-                results.errors.push(`${restaurant.name}: Update failed`);
+                results.details.push({ name: restaurant.name, status: `Update Error: ${updateError.message}` });
+                results.updateErrors++;
             } else {
-                console.log(`Synced ${restaurant.name}: ${photos.length} photos`);
+                results.details.push({ name: restaurant.name, status: 'OK', photoCount: photos.length });
                 results.synced++;
             }
 
-            // Rate limiting: 300ms between requests
-            await new Promise(resolve => setTimeout(resolve, 300));
+            // Rate limiting: 200ms between requests
+            await new Promise(resolve => setTimeout(resolve, 200));
 
-        } catch (error) {
-            console.error(`Error syncing ${restaurant.name}:`, error);
-            results.failed++;
-            results.errors.push(`${restaurant.name}: ${error}`);
+        } catch (error: any) {
+            results.details.push({ name: restaurant.name, status: `Exception: ${error.message}` });
+            results.apiErrors++;
         }
     }
 
     return NextResponse.json({
         success: true,
-        message: `Batch sync completed`,
+        message: `Batch sync completed: ${results.synced} synced, ${results.apiErrors} API errors, ${results.updateErrors} DB errors`,
         results
     });
 }
