@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Restaurant } from '@/lib/types';
-import { X, MapPin, Coffee, Wine, Leaf, Utensils, ArrowRight, Sparkles } from 'lucide-react';
+import { X, MapPin, Coffee, Wine, Leaf, Utensils, ArrowRight, Sparkles, Star } from 'lucide-react';
 import Image from 'next/image';
 
 interface ConciergeModalProps {
