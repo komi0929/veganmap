@@ -93,16 +93,16 @@ export async function POST(request: NextRequest) {
     // Get all restaurants with photos
     const { data: restaurants, error: fetchError } = await supabase
         .from('restaurants')
-        .select('id, name, photos, food_photos')
+        .select('id, name, photos')
         .order('name');
 
     if (fetchError || !restaurants) {
-        return NextResponse.json({ error: 'Failed to fetch restaurants' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to fetch restaurants', details: fetchError?.message }, { status: 500 });
     }
 
-    // Filter: only restaurants without food_photos classification
+    // Filter: only restaurants with photos array
     const toProcess = restaurants.filter(r =>
-        r.photos && Array.isArray(r.photos) && r.photos.length > 0 && !r.food_photos
+        r.photos && Array.isArray(r.photos) && r.photos.length > 1
     );
 
     const results = {
@@ -123,12 +123,11 @@ export async function POST(request: NextRequest) {
             // Reorder: food photos first, then other photos
             const orderedPhotos = [...foodPhotos, ...otherPhotos];
 
-            // Update database
+            // Update database with reordered photos (food first)
             await (supabase as any)
                 .from('restaurants')
                 .update({
-                    photos: orderedPhotos,
-                    food_photos: foodPhotos.length > 0 ? foodPhotos : null
+                    photos: orderedPhotos
                 })
                 .eq('id', restaurant.id);
 
