@@ -99,10 +99,10 @@ export async function POST(request: NextRequest) {
                     opening_hours: place.opening_hours?.weekday_text || null,
                     phone_number: place.formatted_phone_number,
                     google_maps_uri: place.url,
-                    website: place.website,
                     last_synced_at: new Date().toISOString()
                 })
                 .eq('id', restaurant.id);
+
 
             if (updateError) {
                 results.details.push({ name: restaurant.name, status: `Update Error: ${updateError.message}` });
