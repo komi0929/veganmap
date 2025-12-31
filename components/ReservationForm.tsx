@@ -47,7 +47,7 @@ export default function ReservationForm({ restaurant, onClose }: ReservationForm
             }
         };
 
-        const { error: submitError } = await supabase
+        const { error: submitError } = await (supabase as any)
             .from('reservations')
             .insert([reservation]);
 

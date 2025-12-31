@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
             continue;
         }
 
-        const { error } = await supabase
+        const { error } = await (supabase as any)
             .from('restaurants')
             .insert(restaurant);
 

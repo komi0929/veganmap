@@ -61,10 +61,10 @@ export default function RestaurantDetail({ restaurant, allRestaurants = [], onCl
             return;
         }
         if (isBookmarked) {
-            await supabase.from('bookmarks').delete().eq('user_id', user.id).eq('restaurant_id', restaurant.id);
+            await (supabase as any).from('bookmarks').delete().eq('user_id', user.id).eq('restaurant_id', restaurant.id);
             setIsBookmarked(false);
         } else {
-            await supabase.from('bookmarks').insert({ user_id: user.id, restaurant_id: restaurant.id });
+            await (supabase as any).from('bookmarks').insert({ user_id: user.id, restaurant_id: restaurant.id });
             setIsBookmarked(true);
         }
     };
@@ -75,10 +75,10 @@ export default function RestaurantDetail({ restaurant, allRestaurants = [], onCl
             return;
         }
         if (isVisited) {
-            await supabase.from('visits').delete().eq('user_id', user.id).eq('restaurant_id', restaurant.id);
+            await (supabase as any).from('visits').delete().eq('user_id', user.id).eq('restaurant_id', restaurant.id);
             setIsVisited(false);
         } else {
-            await supabase.from('visits').insert({ user_id: user.id, restaurant_id: restaurant.id });
+            await (supabase as any).from('visits').insert({ user_id: user.id, restaurant_id: restaurant.id });
             setIsVisited(true);
         }
     };

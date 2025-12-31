@@ -7,7 +7,7 @@ export async function logSearchClick(term: string, restaurantId: string, source:
 
     // Fire and forget - don't block UI
     try {
-        await supabase
+        await (supabase as any)
             .from('search_logs')
             .insert({
                 search_term: term.trim().toLowerCase(),

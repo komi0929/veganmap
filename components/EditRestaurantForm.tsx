@@ -47,7 +47,7 @@ export default function EditRestaurantForm({ restaurant, onSave, onClose }: Edit
         setIsSubmitting(true);
         setError(null);
 
-        const { error: updateError } = await supabase
+        const { error: updateError } = await (supabase as any)
             .from('restaurants')
             .update({
                 name,
@@ -72,7 +72,7 @@ export default function EditRestaurantForm({ restaurant, onSave, onClose }: Edit
 
         setIsDeleting(true);
 
-        const { error: deleteError } = await supabase
+        const { error: deleteError } = await (supabase as any)
             .from('restaurants')
             .delete()
             .eq('id', restaurant.id);
@@ -142,8 +142,8 @@ export default function EditRestaurantForm({ restaurant, onSave, onClose }: Edit
                                     key={tag}
                                     onClick={() => toggleTag(tag)}
                                     className={`px-3 py-1.5 text-sm rounded-full border transition-all ${selectedTags.includes(tag)
-                                            ? 'bg-green-100 border-green-300 text-green-700'
-                                            : 'bg-white border-stone-200 text-stone-600 hover:border-stone-300'
+                                        ? 'bg-green-100 border-green-300 text-green-700'
+                                        : 'bg-white border-stone-200 text-stone-600 hover:border-stone-300'
                                         }`}
                                 >
                                     #{tag}

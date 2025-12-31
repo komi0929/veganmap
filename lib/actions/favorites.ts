@@ -20,7 +20,7 @@ export async function toggleFavorite(restaurantId: string, userId: string): Prom
 
         if (existing) {
             // Remove favorite
-            const { error } = await supabase
+            const { error } = await (supabase as any)
                 .from('favorites')
                 .delete()
                 .eq('id', existing.id);
@@ -29,7 +29,7 @@ export async function toggleFavorite(restaurantId: string, userId: string): Prom
             return { isFavorite: false };
         } else {
             // Add favorite
-            const { error } = await supabase
+            const { error } = await (supabase as any)
                 .from('favorites')
                 .insert({ user_id: userId, restaurant_id: restaurantId });
 
@@ -115,7 +115,7 @@ export async function triggerBulkInquiry(
         }
 
         // Create inquiry record
-        const { error } = await supabase
+        const { error } = await (supabase as any)
             .from('reservations')
             .insert({
                 restaurant_id: restaurantId,

@@ -63,7 +63,7 @@ export default function PhotoUpload({ restaurantId, existingPhotos, onUploadComp
             setPhotos(newPhotos);
 
             // Update restaurant record
-            await supabase
+            await (supabase as any)
                 .from('restaurants')
                 .update({ photos: newPhotos })
                 .eq('id', restaurantId);
@@ -81,7 +81,7 @@ export default function PhotoUpload({ restaurantId, existingPhotos, onUploadComp
         const newPhotos = photos.filter(p => p !== photoUrl);
         setPhotos(newPhotos);
 
-        await supabase
+        await (supabase as any)
             .from('restaurants')
             .update({ photos: newPhotos })
             .eq('id', restaurantId);

@@ -374,7 +374,7 @@ export async function POST(request: NextRequest) {
             last_synced_at: new Date().toISOString()
         };
 
-        const { data: updatedRestaurant, error: updateError } = await supabase
+        const { data: updatedRestaurant, error: updateError } = await (supabase as any)
             .from('restaurants')
             .update(updateData)
             .eq('id', restaurantId)
