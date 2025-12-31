@@ -134,10 +134,10 @@ export default function OwnerDashboard() {
     };
 
     const getDietaryTags = (dietary: Reservation['dietary_request']) => {
-        const tags = [];
-        if (dietary.vegan) tags.push('Vegan');
-        if (dietary.vegetarian) tags.push('Vegetarian');
-        if (dietary.gluten_free) tags.push('Gluten-Free');
+        const tags: string[] = [];
+        if (dietary?.vegan) tags.push('Vegan');
+        if (dietary?.vegetarian) tags.push('Vegetarian');
+        if (dietary?.gluten_free) tags.push('Gluten-Free');
         return tags;
     };
 
@@ -230,7 +230,7 @@ export default function OwnerDashboard() {
                                             {getStatusBadge(reservation.status)}
                                             <span className="text-xs text-stone-400">{formatDate(reservation.created_at)}</span>
                                         </div>
-                                        <h3 className="font-bold text-stone-900 mb-1">{reservation.restaurant?.name || 'Unknown'}</h3>
+                                        <h3 className="font-bold text-stone-900 mb-1">{(reservation as any).restaurant?.name || 'Unknown'}</h3>
                                         <div className="space-y-1 text-sm text-stone-600">
                                             <div className="flex items-center gap-2">
                                                 <User size={14} />
@@ -255,14 +255,14 @@ export default function OwnerDashboard() {
                                                 </span>
                                             ))}
                                         </div>
-                                        {reservation.dietary_request.allergies && (
+                                        {reservation.dietary_request?.allergies && (
                                             <p className="text-sm text-stone-600">
-                                                <span className="font-medium">{t('allergies')}:</span> {reservation.dietary_request.allergies}
+                                                <span className="font-medium">{t('allergies')}:</span> {reservation.dietary_request?.allergies}
                                             </p>
                                         )}
-                                        {reservation.dietary_request.other && (
+                                        {reservation.dietary_request?.other && (
                                             <p className="text-sm text-stone-600">
-                                                <span className="font-medium">{t('other')}:</span> {reservation.dietary_request.other}
+                                                <span className="font-medium">{t('other')}:</span> {reservation.dietary_request?.other}
                                             </p>
                                         )}
                                     </div>
