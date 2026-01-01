@@ -255,8 +255,8 @@ export async function POST(request: NextRequest) {
                 });
             }
 
-            // Rate limiting
-            await new Promise(r => setTimeout(r, 500));
+            // Rate limiting - increased to 2 seconds to avoid Gemini API failures
+            await new Promise(r => setTimeout(r, 2000));
 
         } catch (error: any) {
             results.errors.push(`${restaurant.name}: ${error.message}`);
