@@ -199,7 +199,19 @@ async function syncSingleRestaurant(
         }
 
         const place = data.result;
-        const photos = (place.photos || []).slice(0, 8).map((p: any) => p.photo_reference);
+        const rawPhotos = (place.photos || []).slice(0, 8).map((p: any) => p.photo_reference);
+
+        // Heuristic: Google Places typically returns exterior as 1st photo
+        // Reorder to prioritize 2nd-4th photos (more likely food/interior)
+        let photos = rawPhotos;
+        if (rawPhotos.length >= 3) {
+            // Put photos 2,3,4 first, then 1, then rest
+            photos = [
+                ...rawPhotos.slice(1, 4),  // Photos 2,3,4 (indices 1-3)
+                rawPhotos[0],               // Photo 1 (exterior)
+                ...rawPhotos.slice(4)       // Rest
+            ];
+        }
 
         // Extract data using Gemini AI
         let realMenu: { name: string; count: number; sentiment: number }[] = [];
