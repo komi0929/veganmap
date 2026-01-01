@@ -105,14 +105,17 @@ export async function syncRestaurantIfNeeded(restaurantId: string): Promise<Rest
             return null;
         }
 
+        // Cast to any to access properties (Supabase types may not include all columns)
+        const restaurantData = restaurant as any;
+
         // Check if data is stale and trigger background re-sync
-        if (isDataStale(restaurant.last_synced_at)) {
-            console.log(`Data stale for ${restaurant.name}, triggering background sync`);
+        if (isDataStale(restaurantData.last_synced_at)) {
+            console.log(`Data stale for ${restaurantData.name}, triggering background sync`);
             triggerBackgroundSync(restaurantId);
         }
 
         // Return current cached data immediately (fast UX)
-        return restaurant as RestaurantWithSync;
+        return restaurantData as RestaurantWithSync;
     } catch (error) {
         console.error('Sync error:', error);
         return null;
