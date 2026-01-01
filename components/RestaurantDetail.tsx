@@ -29,6 +29,7 @@ interface RestaurantDetailProps {
 
 export default function RestaurantDetail({ restaurant, allRestaurants = [], onClose, onNavigate }: RestaurantDetailProps) {
     const t = useTranslations('Detail');
+    const locale = useLocale();
     const [showReservation, setShowReservation] = useState(false);
     const [showConcierge, setShowConcierge] = useState(false);
     const [syncedData, setSyncedData] = useState<RestaurantWithSync | null>(null);
@@ -251,9 +252,54 @@ export default function RestaurantDetail({ restaurant, allRestaurants = [], onCl
                 {/* Content */}
                 < div className="p-6 space-y-5 overflow-y-auto" >
 
-                    {/* Honest Summary (AI) */}
-                    {
-                        displayData.ai_summary && displayData.ai_summary.pros && displayData.ai_summary.pros.length > 0 && (
+                    {/* Inbound Scores - Tourist Intelligence */}
+                    {displayData.inbound_scores && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                            {displayData.inbound_scores.englishFriendly >= 50 && (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-full border border-blue-200">
+                                    🌍 English OK {displayData.inbound_scores.englishFriendly}%
+                                </span>
+                            )}
+                            {displayData.inbound_scores.cardsAccepted >= 50 && (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-purple-50 text-purple-700 rounded-full border border-purple-200">
+                                    💳 Cards OK
+                                </span>
+                            )}
+                            {displayData.inbound_scores.veganConfidence >= 70 && (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-50 text-green-700 rounded-full border border-green-200">
+                                    🌱 Vegan Verified {displayData.inbound_scores.veganConfidence}%
+                                </span>
+                            )}
+                            {displayData.inbound_scores.touristPopular >= 50 && (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-amber-50 text-amber-700 rounded-full border border-amber-200">
+                                    👤 Tourist Favorite
+                                </span>
+                            )}
+                        </div>
+                    )}
+
+                    {/* AI Summary - Multilingual */}
+                    {(() => {
+                        const multiSummary = displayData.multilingual_summary as { ja?: string[]; en?: string[]; ko?: string[]; zh?: string[] } | undefined;
+                        const fallbackSummary = displayData.ai_summary?.pros;
+
+                        // Get summary for current locale, fallback to Japanese, then English, then old format
+                        let summaryItems: string[] = [];
+                        if (multiSummary) {
+                            if (locale === 'ja' && multiSummary.ja?.length) summaryItems = multiSummary.ja;
+                            else if (locale === 'en' && multiSummary.en?.length) summaryItems = multiSummary.en;
+                            else if (locale === 'ko' && multiSummary.ko?.length) summaryItems = multiSummary.ko;
+                            else if (locale === 'zh-TW' && multiSummary.zh?.length) summaryItems = multiSummary.zh;
+                            else if (multiSummary.en?.length) summaryItems = multiSummary.en;
+                            else if (multiSummary.ja?.length) summaryItems = multiSummary.ja;
+                        }
+                        if (summaryItems.length === 0 && fallbackSummary?.length) {
+                            summaryItems = fallbackSummary;
+                        }
+
+                        if (summaryItems.length === 0) return null;
+
+                        return (
                             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100 shadow-sm relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-2 opacity-10">
                                     <MessageSquare size={80} />
@@ -267,14 +313,14 @@ export default function RestaurantDetail({ restaurant, allRestaurants = [], onCl
                                         <span className="shrink-0 text-green-600 bg-green-100 rounded-full w-5 h-5 flex items-center justify-center text-xs mt-0.5">✓</span>
                                         <div>
                                             <ul className="text-sm text-stone-700 list-disc list-inside marker:text-green-300">
-                                                {displayData.ai_summary.pros.map((p: string, i: number) => <li key={i}>{p}</li>)}
+                                                {summaryItems.map((p: string, i: number) => <li key={i}>{p}</li>)}
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        )
-                    }
+                        );
+                    })()}
 
                     {/* Address & Phone */}
                     < div className="space-y-3" >
