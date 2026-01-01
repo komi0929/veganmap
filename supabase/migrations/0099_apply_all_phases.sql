@@ -57,11 +57,25 @@ ALTER TABLE search_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bookmarks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE visits ENABLE ROW LEVEL SECURITY;
 
--- Policies for public access
-CREATE POLICY IF NOT EXISTS "Search logs insert" ON search_logs FOR INSERT WITH CHECK (true);
-CREATE POLICY IF NOT EXISTS "Bookmarks public read" ON bookmarks FOR SELECT USING (true);
-CREATE POLICY IF NOT EXISTS "Bookmarks user insert" ON bookmarks FOR INSERT WITH CHECK (true);
-CREATE POLICY IF NOT EXISTS "Bookmarks user delete" ON bookmarks FOR DELETE USING (true);
-CREATE POLICY IF NOT EXISTS "Visits public read" ON visits FOR SELECT USING (true);
-CREATE POLICY IF NOT EXISTS "Visits user insert" ON visits FOR INSERT WITH CHECK (true);
-CREATE POLICY IF NOT EXISTS "Visits user delete" ON visits FOR DELETE USING (true);
+-- Policies for public access (Drop first to avoid duplicates, then create)
+DROP POLICY IF EXISTS "Search logs insert" ON search_logs;
+CREATE POLICY "Search logs insert" ON search_logs FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Bookmarks public read" ON bookmarks;
+CREATE POLICY "Bookmarks public read" ON bookmarks FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Bookmarks user insert" ON bookmarks;
+CREATE POLICY "Bookmarks user insert" ON bookmarks FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Bookmarks user delete" ON bookmarks;
+CREATE POLICY "Bookmarks user delete" ON bookmarks FOR DELETE USING (true);
+
+DROP POLICY IF EXISTS "Visits public read" ON visits;
+CREATE POLICY "Visits public read" ON visits FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Visits user insert" ON visits;
+CREATE POLICY "Visits user insert" ON visits FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Visits user delete" ON visits;
+CREATE POLICY "Visits user delete" ON visits FOR DELETE USING (true);
+
