@@ -7,12 +7,12 @@ export async function GET() {
         process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    // Get first 3 restaurants with ALL fields
+    // Get ALL restaurants with ALL fields
     const { data: restaurants, error } = await supabase
         .from('restaurants')
         .select('*')
         .order('name')
-        .limit(3);
+        .limit(100);
 
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
