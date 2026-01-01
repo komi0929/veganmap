@@ -23,6 +23,9 @@ export interface RestaurantWithSync {
     real_menu?: { name: string; count: number; sentiment: number }[];
     ai_summary?: { pros: string[] };
     vibe_tags?: string[];
+    // Phase 1 Innovation fields
+    multilingual_summary?: { ja?: string[]; en?: string[]; ko?: string[]; zh?: string[] };
+    inbound_scores?: { englishFriendly: number; cardsAccepted: number; veganConfidence: number; touristPopular: number };
 }
 
 export interface DietaryTags {
@@ -72,21 +75,44 @@ export const PREDICTIVE_MENU_ITEMS: Record<string, { emoji: string; items: strin
     }
 };
 
+// Check if data is stale (older than 7 days)
+function isDataStale(lastSyncedAt: string | null): boolean {
+    if (!lastSyncedAt) return true;
+    const date = new Date(lastSyncedAt);
+    const now = new Date();
+    const diffDays = (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24);
+    return diffDays > 7;
+}
+
+// Trigger background re-sync (fire and forget)
+function triggerBackgroundSync(restaurantId: string): void {
+    fetch(`/api/restaurants/sync-one?secret=dev-seed-2024&restaurantId=${restaurantId}`, {
+        method: 'POST'
+    }).catch(err => console.error('Background sync failed:', err));
+}
+
 export async function syncRestaurantIfNeeded(restaurantId: string): Promise<RestaurantWithSync | null> {
     try {
-        const response = await fetch('/api/restaurants/sync', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ restaurantId })
-        });
+        // First, fetch current data from DB
+        const { data: restaurant, error } = await supabase
+            .from('restaurants')
+            .select('*')
+            .eq('id', restaurantId)
+            .single();
 
-        const data = await response.json();
-
-        if (data.restaurant) {
-            return data.restaurant as RestaurantWithSync;
+        if (error || !restaurant) {
+            console.error('Failed to fetch restaurant:', error);
+            return null;
         }
 
-        return null;
+        // Check if data is stale and trigger background re-sync
+        if (isDataStale(restaurant.last_synced_at)) {
+            console.log(`Data stale for ${restaurant.name}, triggering background sync`);
+            triggerBackgroundSync(restaurantId);
+        }
+
+        // Return current cached data immediately (fast UX)
+        return restaurant as RestaurantWithSync;
     } catch (error) {
         console.error('Sync error:', error);
         return null;
