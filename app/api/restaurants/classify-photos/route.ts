@@ -17,59 +17,85 @@ async function downloadImageAsBase64(photoReference: string, apiKey: string): Pr
     }
 }
 
-// Classify photos using Gemini Vision
+// Classify photos using Gemini Vision - analyze all photos together
 async function classifyPhotos(photoReferences: string[], apiKey: string, geminiKey: string): Promise<{
     foodPhotos: string[];
     otherPhotos: string[];
+    debug: string;
 }> {
     if (!geminiKey || photoReferences.length === 0) {
-        return { foodPhotos: [], otherPhotos: photoReferences };
+        return { foodPhotos: [], otherPhotos: photoReferences, debug: 'No Gemini key or photos' };
     }
 
     try {
         const genAI = new GoogleGenerativeAI(geminiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-        const foodPhotos: string[] = [];
-        const otherPhotos: string[] = [];
+        // Download up to 6 photos
+        const targetRefs = photoReferences.slice(0, 6);
+        const imageParts: { inlineData: { data: string; mimeType: string } }[] = [];
+        const validRefs: string[] = [];
 
-        // Analyze up to 5 photos (balance between quality and API quota)
-        for (const ref of photoReferences.slice(0, 5)) {
+        for (const ref of targetRefs) {
             const b64 = await downloadImageAsBase64(ref, apiKey);
-            if (!b64) {
-                otherPhotos.push(ref);
-                continue;
+            if (b64) {
+                imageParts.push({ inlineData: { data: b64, mimeType: "image/jpeg" } });
+                validRefs.push(ref);
             }
-
-            const prompt = `Is this image primarily a photo of FOOD or a DISH/MEAL?
-Answer with exactly one word: "FOOD" if it shows food/dish/meal as the main subject, or "OTHER" if it shows interior, exterior, staff, menu board, signage, or anything else.
-Just respond with: FOOD or OTHER`;
-
-            const result = await model.generateContent([
-                prompt,
-                { inlineData: { data: b64, mimeType: "image/jpeg" } }
-            ]);
-            const text = await result.response.text();
-
-            if (text.toUpperCase().includes('FOOD')) {
-                foodPhotos.push(ref);
-            } else {
-                otherPhotos.push(ref);
-            }
-
-            // Small delay to avoid rate limiting
-            await new Promise(r => setTimeout(r, 100));
         }
 
-        // Add remaining photos to otherPhotos
-        photoReferences.slice(5).forEach(ref => otherPhotos.push(ref));
+        if (imageParts.length === 0) {
+            return { foodPhotos: [], otherPhotos: photoReferences, debug: 'Failed to download any images' };
+        }
 
-        return { foodPhotos, otherPhotos };
-    } catch (error) {
+        // Analyze all photos together
+        const prompt = `You are analyzing ${imageParts.length} restaurant photos for a vegan restaurant directory.
+
+For each photo (numbered 1 to ${imageParts.length}), determine if it primarily shows FOOD (dishes, meals, plates with food, drinks, desserts) or NOT FOOD (exterior, interior, staff, menu boards, signage, tables without food).
+
+Respond with a JSON object in this exact format:
+{"foodIndices": [1, 3, 5]}
+
+where foodIndices is an array of 1-based indices of photos that show food. If no photos show food, return {"foodIndices": []}`;
+
+        const result = await model.generateContent([prompt, ...imageParts]);
+        const text = await result.response.text();
+
+        // Parse JSON response
+        const jsonMatch = text.match(/\{[\s\S]*"foodIndices"[\s\S]*\}/);
+        if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            const foodIndices: number[] = parsed.foodIndices || [];
+
+            const foodPhotos: string[] = [];
+            const otherPhotos: string[] = [];
+
+            validRefs.forEach((ref, idx) => {
+                if (foodIndices.includes(idx + 1)) {
+                    foodPhotos.push(ref);
+                } else {
+                    otherPhotos.push(ref);
+                }
+            });
+
+            // Add any refs that weren't analyzed to otherPhotos
+            photoReferences.slice(6).forEach(ref => otherPhotos.push(ref));
+
+            return {
+                foodPhotos,
+                otherPhotos,
+                debug: `Gemini response: ${text.substring(0, 200)}`
+            };
+        }
+
+        return { foodPhotos: [], otherPhotos: photoReferences, debug: `No JSON in response: ${text.substring(0, 200)}` };
+
+    } catch (error: any) {
         console.error('Photo classification error:', error);
-        return { foodPhotos: [], otherPhotos: photoReferences };
+        return { foodPhotos: [], otherPhotos: photoReferences, debug: `Error: ${error.message}` };
     }
 }
+
 
 export async function POST(request: NextRequest) {
     const { searchParams } = new URL(request.url);
@@ -112,9 +138,9 @@ export async function POST(request: NextRequest) {
         details: [] as { name: string; foodCount: number; totalCount: number }[]
     };
 
-    for (const restaurant of toProcess.slice(0, 20)) { // Process 20 at a time
+    for (const restaurant of toProcess.slice(0, 10)) { // Process 10 at a time (reduced for reliability)
         try {
-            const { foodPhotos, otherPhotos } = await classifyPhotos(
+            const { foodPhotos, otherPhotos, debug } = await classifyPhotos(
                 restaurant.photos as string[],
                 apiKey,
                 geminiKey
@@ -136,14 +162,20 @@ export async function POST(request: NextRequest) {
             results.details.push({
                 name: restaurant.name,
                 foodCount: foodPhotos.length,
-                totalCount: restaurant.photos.length
-            });
+                totalCount: restaurant.photos.length,
+                debug: debug
+            } as any);
 
-            // Rate limiting
-            await new Promise(r => setTimeout(r, 500));
+            // Rate limiting - longer delay for reliability
+            await new Promise(r => setTimeout(r, 1000));
 
         } catch (error: any) {
-            console.error(`Error classifying ${restaurant.name}:`, error);
+            results.details.push({
+                name: restaurant.name,
+                foodCount: 0,
+                totalCount: restaurant.photos?.length || 0,
+                debug: `Exception: ${error.message}`
+            } as any);
         }
     }
 
