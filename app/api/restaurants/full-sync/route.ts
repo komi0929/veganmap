@@ -17,79 +17,94 @@ async function downloadImageAsBase64(photoReference: string, apiKey: string): Pr
     }
 }
 
-// Helper: Extract menu items from reviews
-function extractRealMenu(reviews: any[]): { name: string; count: number; sentiment: number }[] {
-    if (!reviews || !Array.isArray(reviews)) return [];
+// Helper: Extract menu items from reviews using Gemini AI
+async function extractRealMenuWithAI(reviews: any[], geminiKey: string): Promise<{ name: string; count: number; sentiment: number }[]> {
+    if (!reviews || reviews.length === 0 || !geminiKey) return [];
 
-    const menuCandidates = new Map<string, { count: number; totalRating: number }>();
+    try {
+        const genAI = new GoogleGenerativeAI(geminiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
-    const patterns = [
-        /(?:the|a)\s+([a-zA-Z\s]+?)\s+(?:was|is)\s+(?:delicious|good|great|amazing|tasty)/gi,
-        /(?:ordered|ate|had|tried)\s+(?:the\s+)?([a-zA-Z\s]+?)(?:\.|,|!|\s+and|\s+was)/gi,
-        /「(.+?)」(?:\s*が|\s*を)/g,
-        /([^、。!?\s]+?)(?:が|は)(?:美味|おい|うま)/g
-    ];
+        const reviewTexts = reviews
+            .map(r => `[${r.rating}★] ${r.text}`)
+            .filter(Boolean)
+            .join('\n---\n');
 
-    const stopWords = new Set([
-        'it', 'that', 'this', 'everything', 'staff', 'service', 'place', 'atmosphere', 'price',
-        'dinner', 'lunch', 'breakfast', 'meal', 'food', 'restaurant', 'option', 'menu', 'vegan',
-        '店', '雰囲気', 'スタッフ', '接客', '値段', '価格'
-    ]);
+        const prompt = `以下はレストランのレビューです。レビューから言及されている具体的な料理名・メニュー名を抽出してください。
 
-    for (const review of reviews) {
-        const text = review.text || '';
-        const rating = review.rating || 3;
+レビュー:
+${reviewTexts}
 
-        for (const pattern of patterns) {
-            const matches = text.matchAll(pattern);
-            for (const match of matches) {
-                const capture = match[1]?.trim().toLowerCase();
-                if (capture && capture.length > 2 && capture.length < 30 && !stopWords.has(capture)) {
-                    const current = menuCandidates.get(capture) || { count: 0, totalRating: 0 };
-                    menuCandidates.set(capture, {
-                        count: current.count + 1,
-                        totalRating: current.totalRating + rating
-                    });
-                }
-            }
+指示:
+- 料理名のみを抽出（「カレー」「ハンバーガー」「ラテ」「vegan curry」など）
+- 店名、雰囲気、接客、サービスなどは絶対に含めない
+- 言語は問わない（日本語でも英語でもOK）
+- JSON配列で返す: ["カレー", "ハンバーガー", "Vegan Latte"]
+- 料理名が見つからない場合は空配列 []
+- 最大5つまで`;
+
+        const result = await model.generateContent(prompt);
+        const text = await result.response.text();
+
+        const jsonMatch = text.match(/\[[\s\S]*?\]/);
+        if (jsonMatch) {
+            const items: string[] = JSON.parse(jsonMatch[0]);
+            // Remove duplicates and format
+            const unique = [...new Set(items.map(i => i.trim()))];
+            return unique.slice(0, 5).map((name, idx) => ({
+                name,
+                count: 1,
+                sentiment: 4.5 - idx * 0.2 // Approximate sentiment based on order
+            }));
         }
+        return [];
+    } catch (error) {
+        console.error('extractRealMenuWithAI failed:', error);
+        return [];
     }
-
-    return Array.from(menuCandidates.entries())
-        .map(([name, data]) => ({
-            name: name.replace(/\b\w/g, l => l.toUpperCase()),
-            count: data.count,
-            sentiment: Math.round((data.totalRating / data.count) * 10) / 10
-        }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 8);
 }
 
-// Helper: Extract AI summary (pros only)
-function extractAISummary(reviews: any[]): { pros: string[] } | null {
-    if (!reviews || reviews.length === 0) return null;
 
-    const pros: string[] = [];
-    const positivePatterns = [
-        /(?:delicious|amazing|great|best|excellent|tasty)\s+([a-zA-Z\s]+)/gi,
-        /(?:loved|enjoyed|recommend)\s+(?:the\s+)?([a-zA-Z\s]+)/gi
-    ];
+// Helper: Extract AI summary (pros) using Gemini AI
+async function extractAISummaryWithAI(reviews: any[], geminiKey: string): Promise<{ pros: string[] } | null> {
+    if (!reviews || reviews.length === 0 || !geminiKey) return null;
 
-    for (const review of reviews) {
-        const text = review.text || '';
-        for (const pattern of positivePatterns) {
-            const matches = text.matchAll(pattern);
-            for (const match of matches) {
-                if (match[1] && match[1].length > 3) {
-                    pros.push(match[1].trim());
-                }
-            }
+    try {
+        const genAI = new GoogleGenerativeAI(geminiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+
+        const reviewTexts = reviews
+            .map(r => `[${r.rating}★] ${r.text}`)
+            .filter(Boolean)
+            .join('\n---\n');
+
+        const prompt = `以下はレストランのレビューです。このレストランの良い点（Pros）を3-5個抽出してください。
+
+レビュー:
+${reviewTexts}
+
+指示:
+- 簡潔に（各項目15文字以内）
+- 具体的に（「美味しい」より「カレーが絶品」）
+- 英語のレビューも日本語に翻訳して抽出
+- JSON配列で返す: ["良い点1", "良い点2", "良い点3"]
+- 良い点が見つからない場合は空配列 []`;
+
+        const result = await model.generateContent(prompt);
+        const text = await result.response.text();
+
+        const jsonMatch = text.match(/\[[\s\S]*?\]/);
+        if (jsonMatch) {
+            const pros: string[] = JSON.parse(jsonMatch[0]);
+            return pros.length > 0 ? { pros: pros.slice(0, 5) } : null;
         }
+        return null;
+    } catch (error) {
+        console.error('extractAISummaryWithAI failed:', error);
+        return null;
     }
-
-    const uniquePros = Array.from(new Set(pros)).slice(0, 5);
-    return uniquePros.length > 0 ? { pros: uniquePros } : null;
 }
+
 
 // Helper: Analyze vibe using Gemini
 async function analyzeVibe(photoReferences: string[], apiKey: string, geminiKey: string): Promise<string[]> {
@@ -187,13 +202,21 @@ export async function POST(request: NextRequest) {
 
             const place = data.result;
             const photos = (place.photos || []).slice(0, 8).map((p: any) => p.photo_reference);
-            const realMenu = extractRealMenu(place.reviews);
-            const aiSummary = extractAISummary(place.reviews);
 
-            // Analyze vibe (only if Gemini key exists)
+            // Extract menu and summary using Gemini AI (requires key)
+            let realMenu: { name: string; count: number; sentiment: number }[] = [];
+            let aiSummary: { pros: string[] } | null = null;
             let vibeTags: string[] = [];
-            if (geminiKey && photos.length > 0) {
-                vibeTags = await analyzeVibe(photos, apiKey, geminiKey);
+
+            if (geminiKey) {
+                // Run AI extractions
+                realMenu = await extractRealMenuWithAI(place.reviews, geminiKey);
+                aiSummary = await extractAISummaryWithAI(place.reviews, geminiKey);
+
+                // Analyze vibe from photos
+                if (photos.length > 0) {
+                    vibeTags = await analyzeVibe(photos, apiKey, geminiKey);
+                }
             }
 
             // Update database
