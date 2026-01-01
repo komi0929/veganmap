@@ -255,22 +255,22 @@ export default function RestaurantDetail({ restaurant, allRestaurants = [], onCl
                     {/* Inbound Scores - Tourist Intelligence */}
                     {displayData.inbound_scores && (
                         <div className="flex flex-wrap gap-2 mb-4">
-                            {displayData.inbound_scores.englishFriendly >= 50 && (
+                            {(displayData.inbound_scores?.englishFriendly ?? 0) >= 50 && (
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-full border border-blue-200">
                                     🌍 English OK {displayData.inbound_scores.englishFriendly}%
                                 </span>
                             )}
-                            {displayData.inbound_scores.cardsAccepted >= 50 && (
+                            {(displayData.inbound_scores?.cardsAccepted ?? 0) >= 50 && (
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-purple-50 text-purple-700 rounded-full border border-purple-200">
                                     💳 Cards OK
                                 </span>
                             )}
-                            {displayData.inbound_scores.veganConfidence >= 70 && (
+                            {(displayData.inbound_scores?.veganConfidence ?? 0) >= 70 && (
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-50 text-green-700 rounded-full border border-green-200">
                                     🌱 Vegan Verified {displayData.inbound_scores.veganConfidence}%
                                 </span>
                             )}
-                            {displayData.inbound_scores.touristPopular >= 50 && (
+                            {(displayData.inbound_scores?.touristPopular ?? 0) >= 50 && (
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-amber-50 text-amber-700 rounded-full border border-amber-200">
                                     👤 Tourist Favorite
                                 </span>
