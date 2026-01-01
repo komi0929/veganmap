@@ -11,8 +11,10 @@ export type Restaurant = Omit<RestaurantRow, 'real_menu' | 'ai_summary' | 'dieta
     real_menu: { name: string; count: number; sentiment: number }[] | null;
     ai_summary: { pros: string[]; cons?: string[]; tips?: string[] } | null;
 
-    // Optional fields present in client usage but maybe not in DB (or merged)
-    // currently none additional that aren't in DB, based on my update.
+    // Phase 1 Innovation fields
+    vibe_tags?: string[];
+    multilingual_summary?: { ja?: string[]; en?: string[]; ko?: string[]; zh?: string[] };
+    inbound_scores?: { englishFriendly: number; cardsAccepted: number; veganConfidence: number; touristPopular: number };
 };
 
 export type ReservationStatus = 'pending' | 'confirmed' | 'rejected';
