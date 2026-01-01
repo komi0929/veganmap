@@ -59,39 +59,75 @@ ${reviewTexts}
     return [];
 }
 
-// Helper: Extract AI summary (pros) using Gemini AI
-async function extractAISummaryWithAI(reviews: any[], geminiKey: string): Promise<{ pros: string[] } | null> {
-    if (!reviews || reviews.length === 0 || !geminiKey) return null;
+// Helper: Extract multilingual AI summary + inbound scores in ONE call (efficiency)
+async function extractEnhancedDataWithAI(reviews: any[], geminiKey: string): Promise<{
+    ai_summary: { pros: string[] } | null;
+    multilingual_summary: { ja: string[]; en: string[]; ko: string[]; zh: string[] } | null;
+    inbound_scores: { englishFriendly: number; cardsAccepted: number; veganConfidence: number; touristPopular: number } | null;
+}> {
+    if (!reviews || reviews.length === 0 || !geminiKey) {
+        return { ai_summary: null, multilingual_summary: null, inbound_scores: null };
+    }
 
     const genAI = new GoogleGenerativeAI(geminiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
     const reviewTexts = reviews
-        .map(r => `[${r.rating}★] ${r.text}`)
+        .map(r => `[${r.rating}★] [${r.language || 'unknown'}] ${r.text}`)
         .filter(Boolean)
         .join('\n---\n');
 
-    const prompt = `以下はレストランのレビューです。このレストランの良い点（Pros）を3-5個抽出してください。
+    const prompt = `Analyze these restaurant reviews and extract data for VEGAN TOURISTS.
 
-レビュー:
+Reviews:
 ${reviewTexts}
 
-指示:
-- 簡潔に（各項目15文字以内）
-- 具体的に（「美味しい」より「カレーが絶品」）
-- 英語のレビューも日本語に翻訳して抽出
-- JSON配列で返す: ["良い点1", "良い点2", "良い点3"]
-- 良い点が見つからない場合は空配列 []`;
+Return a JSON object with:
+1. "multilingual_summary": Highlights in 4 languages (3-5 items each, max 15 chars per item)
+2. "inbound_scores": Tourist-friendliness scores (0-100 each)
 
-    const result = await model.generateContent(prompt);
-    const text = await result.response.text();
+JSON format:
+{
+  "multilingual_summary": {
+    "ja": ["日本語で良い点1", "日本語で良い点2", "日本語で良い点3"],
+    "en": ["Good point in English 1", "Good point 2", "Good point 3"],
+    "ko": ["한국어로 좋은점1", "좋은점2", "좋은점3"],
+    "zh": ["中文优点1", "优点2", "优点3"]
+  },
+  "inbound_scores": {
+    "englishFriendly": 0-100,
+    "cardsAccepted": 0-100,
+    "veganConfidence": 0-100,
+    "touristPopular": 0-100
+  }
+}
 
-    const jsonMatch = text.match(/\[[\s\S]*?\]/);
-    if (jsonMatch) {
-        const pros: string[] = JSON.parse(jsonMatch[0]);
-        return pros.length > 0 ? { pros: pros.slice(0, 5) } : null;
+- Make highlights SPECIFIC (e.g., "Crispy vegan katsu" not "Good food")
+- englishFriendly: Can tourists communicate in English?
+- cardsAccepted: Are credit cards likely accepted?
+- veganConfidence: How safe is it for strict vegans?
+- touristPopular: Is it popular with foreign visitors?`;
+
+    try {
+        const result = await model.generateContent(prompt);
+        const text = await result.response.text();
+
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            return {
+                ai_summary: parsed.multilingual_summary?.ja?.length > 0
+                    ? { pros: parsed.multilingual_summary.ja }
+                    : null,
+                multilingual_summary: parsed.multilingual_summary || null,
+                inbound_scores: parsed.inbound_scores || null
+            };
+        }
+    } catch (error) {
+        console.error('extractEnhancedDataWithAI failed:', error);
     }
-    return null;
+
+    return { ai_summary: null, multilingual_summary: null, inbound_scores: null };
 }
 
 // Helper: Analyze vibe using Gemini
@@ -167,27 +203,32 @@ async function syncSingleRestaurant(
 
         // Extract data using Gemini AI
         let realMenu: { name: string; count: number; sentiment: number }[] = [];
-        let aiSummary: { pros: string[] } | null = null;
+        let enhancedData: {
+            ai_summary: { pros: string[] } | null;
+            multilingual_summary: any;
+            inbound_scores: any;
+        } = { ai_summary: null, multilingual_summary: null, inbound_scores: null };
         let vibeTags: string[] = [];
 
         if (geminiKey && place.reviews && place.reviews.length > 0) {
-            // Add delay between Gemini calls to avoid rate limiting
+            // Extract menu items
             realMenu = await extractRealMenuWithAI(place.reviews, geminiKey);
             await new Promise(r => setTimeout(r, 1000));
 
-            aiSummary = await extractAISummaryWithAI(place.reviews, geminiKey);
+            // Extract multilingual summary + inbound scores in ONE call
+            enhancedData = await extractEnhancedDataWithAI(place.reviews, geminiKey);
             await new Promise(r => setTimeout(r, 1000));
 
+            // Analyze vibe from photos
             if (photos.length > 0) {
                 vibeTags = await analyzeVibe(photos, apiKey, geminiKey);
             }
         }
 
-        // Determine sync status based on data extraction success
-        const hasRequiredData = realMenu.length > 0 || aiSummary !== null;
-        const syncStatus = hasRequiredData ? 'completed' : 'completed'; // Even without AI data, mark as completed
+        // Determine sync status
+        const syncStatus = 'completed';
 
-        // Update database
+        // Update database with all enhanced fields
         const updateData: Record<string, any> = {
             rating: place.rating,
             user_ratings_total: place.user_ratings_total,
@@ -200,11 +241,14 @@ async function syncSingleRestaurant(
             last_synced_at: new Date().toISOString(),
             sync_status: syncStatus,
             sync_error: null,
-            sync_retry_count: retryCount
+            sync_retry_count: retryCount,
+            cached_reviews: place.reviews || []
         };
 
         if (realMenu.length > 0) updateData.real_menu = realMenu;
-        if (aiSummary) updateData.ai_summary = aiSummary;
+        if (enhancedData.ai_summary) updateData.ai_summary = enhancedData.ai_summary;
+        if (enhancedData.multilingual_summary) updateData.multilingual_summary = enhancedData.multilingual_summary;
+        if (enhancedData.inbound_scores) updateData.inbound_scores = enhancedData.inbound_scores;
         if (vibeTags.length > 0) updateData.vibe_tags = vibeTags;
 
         const { error: updateError } = await supabase
