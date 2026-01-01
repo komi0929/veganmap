@@ -265,8 +265,10 @@ async function syncSingleRestaurant(
             data: {
                 photos: photos.length,
                 menu: realMenu.length,
-                summary: aiSummary?.pros?.length || 0,
-                vibes: vibeTags.length
+                summary: enhancedData.ai_summary?.pros?.length || 0,
+                vibes: vibeTags.length,
+                hasMultilingual: !!enhancedData.multilingual_summary,
+                hasInbound: !!enhancedData.inbound_scores
             }
         };
 
