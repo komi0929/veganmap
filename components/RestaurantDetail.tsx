@@ -476,7 +476,7 @@ export default function RestaurantDetail({ restaurant, allRestaurants = [], onCl
                                             </div>
                                             <p className="text-stone-700 italic leading-relaxed">"{review.text}"</p>
                                             <div className="flex flex-wrap gap-1 mt-3">
-                                                {review.keywords.map(kw => (
+                                                {review.keywords?.map(kw => (
                                                     <span key={kw} className="text-[10px] px-1.5 py-0.5 bg-green-100 text-green-700 rounded uppercase tracking-wide">
                                                         {kw}
                                                     </span>
